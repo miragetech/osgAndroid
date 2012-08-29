@@ -1,0 +1,2 @@
+LOCAL_PATH:= $(LOCAL_PATH)/jni
+
