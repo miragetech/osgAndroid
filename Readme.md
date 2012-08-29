@@ -1,6 +1,6 @@
 # osgAndroid - Openscenegraph for Android #
 
-osgAndroid is an Android library based on the Android NDK for OpenSceneGraph.
+A set of manual JNI/Java wrappers for OpenSceneGraph and utility classes to develop OSG applications in android.
 
 ## Setting up build environment
 
