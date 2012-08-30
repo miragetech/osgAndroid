@@ -13,18 +13,18 @@
        support, do not in themselves constitude derivitave work.
 
     2. Inherited objects and classes do not constitude 
-       derivative work or modifications to Chaskii libraries.
+       derivative work or modifications to osgAndroid libraries.
 
     3. Static linking of applications or other libraries to the
-       Chaskii libraries does not constitute a derivative work
+       osgAndroid libraries does not constitute a derivative work
        and does not require the author to provide source code for 
-       the application or widget, use the shared Chaskii 
+       the application or widget, use the shared osgAndroid 
        libraries, or link their applications or libraries against 
-       a user-supplied version of Chaskii.
+       a user-supplied version of osgAndroid.
 
-    4. You do not have to provide a copy of the Chaskii license
-       with programs that are linked to the Chaskii libraries, nor
-       do you have to identify the Chaskii license in your
+    4. You do not have to provide a copy of the osgAndroid license
+       with programs that are linked to the osgAndroid libraries, nor
+       do you have to identify the osgAndroid license in your
        program or documentation as required by the LGPL.
   
   ------------------------------------------------------------------------  
