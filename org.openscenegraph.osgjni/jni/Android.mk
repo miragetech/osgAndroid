@@ -2,6 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+# OSG SDK for Android
 OSG_SDK := /Users/rgaitan/Projects/android/osg-3.0.1
 
 LOCAL_MODULE            := libjniosgconfiguration

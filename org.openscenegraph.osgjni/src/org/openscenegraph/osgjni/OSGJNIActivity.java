@@ -18,6 +18,7 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osgjni;
 
+import org.openscenegraph.osg.core.MatrixTransform;
 import org.openscenegraph.osg.core.Node;
 import org.openscenegraph.osg.db.ReadFile;
 import org.openscenegraph.osg.viewer.Viewer;
@@ -39,9 +40,11 @@ public class OSGJNIActivity extends Activity {
 			mView = new Viewer(this);
 			mView.init(false, 16, 8);
 			Node node = ReadFile.readNodeFile("/sdcard/axes.ive");
-			mView.setSceneData(OSGConfiguration.configureScene(node));
-			OSGConfiguration.configureViewer(mView);
+			MatrixTransform m = new MatrixTransform();
+			m.addChild(node);
+			mView.setSceneData(OSGConfiguration.configureScene(m));
 			mView.setDefaultSettings();
+			OSGConfiguration.configureViewer(mView);
 			setContentView(mView);
 		} catch (Exception e) {
 			Log.w("OSGActivity", e.getMessage());

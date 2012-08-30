@@ -58,7 +58,7 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osgjni_OSGConfiguration_nativeCo
 	osg::Node *node = reinterpret_cast<osg::Node*>(lnode);
 	osg::ref_ptr<osg::AnimationPath> am = new osg::AnimationPath();
 	am->insert(0, osg::AnimationPath::ControlPoint(osg::Vec3d(0,0,0),osg::Quat(0,0,0,1),osg::Vec3d(0.5,0.5,0.5)));
-	am->insert(5, osg::AnimationPath::ControlPoint(osg::Vec3d(0,0,0),osg::Quat(0,0,0.7,1),osg::Vec3d(1.5,1.5,1.5)));
+	am->insert(5, osg::AnimationPath::ControlPoint(osg::Vec3d(0,0,0),osg::Quat(0,0,1.4,1),osg::Vec3d(3.5,3.5,3.5)));
 
 	osg::ref_ptr<osg::AnimationPathCallback> amcb = new osg::AnimationPathCallback();
 	amcb->setAnimationPath(am.get());
