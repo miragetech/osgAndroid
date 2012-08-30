@@ -1,6 +1,7 @@
 # osgAndroid - Openscenegraph for Android #
 
-A set of manual JNI/Java wrappers for OpenSceneGraph and utility classes to develop OSG applications in android.
+Manual JNI/Java wrappers for OpenSceneGraph and some utility classes to easily
+develop OSG applications in Android.
 
 ## Setting up build environment
 
@@ -112,10 +113,10 @@ The osgAndroid project has been initially funded by:
  * AI2(http://www.ai2.upv.es)
  * MirageTechnologies S.L.(http://www.mirage-tech.com).  
 
-The current contributors of the project are (use Name Surname - Company):
+Contributors (use Name Surname - Company):
 
-+ Rafael Gaitan - Mirage Technologies S.L.
+ + Rafael Gaitan - Mirage Technologies S.L.
  + Julio Campos - Mirage Technologies S.L.
  + Jorge Izquierdo - AI2
-
+ + Jordi Torreas - AI2
 
