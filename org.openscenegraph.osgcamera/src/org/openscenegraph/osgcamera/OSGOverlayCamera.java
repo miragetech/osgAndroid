@@ -28,7 +28,6 @@ import org.openscenegraph.osg.viewer.Viewer;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 
@@ -65,9 +64,17 @@ public class OSGOverlayCamera extends Activity {
 		mt2.addChild(scene);
 		
 		MatrixTransform mt3 = new MatrixTransform();
-		Matrix m3 = new Matrix();
-		m3.makeTranslate(3.0f, 0, 0);
-		m3.preMult(m2);
+		Matrix m3 = new Matrix(
+				1,   0, 0,0,
+				0,   1, 0,0,
+				0,   0, 1,0,
+				3.0f,0, 0,1);
+		Matrix s3 = new Matrix(
+				2.0f,0,   0,   0,
+				0,   2.0f,0,   0,
+				0,   0,   2.0f,0,
+				0,   0,   0,   1);
+		m3.preMult(s3);
 		mt3.setMatrix(m3);
 		mt3.addChild(scene);
 		
