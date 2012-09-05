@@ -165,6 +165,8 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_MatrixTransform_nativeSe
     if(g != 0 && m != 0)
     {
         g->setMatrix(*m);
+        LOGI("SETTING MATRIX");
+        OSG_NOTICE << *m << std::endl;
         //LOGI("SETTING MATRIX");
     }
 }
@@ -902,7 +904,7 @@ JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_core_Matrix_nativeInvert(
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Matrix_nativePreMult(JNIEnv *, jclass, jlong cptr, jlong matrix)
 {
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(cptr);
-    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(cptr);
+    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(matrix);
     if(m != 0)
     {
         m->preMult(*rhs);
@@ -912,7 +914,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Matrix_nativePreMult(JNI
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Matrix_nativePostMult(JNIEnv *, jclass, jlong cptr, jlong matrix)
 {
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(cptr);
-    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(cptr);
+    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(matrix);
     if(m != 0)
     {
         m->postMult(*rhs);
