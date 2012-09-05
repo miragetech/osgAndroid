@@ -165,9 +165,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_MatrixTransform_nativeSe
     if(g != 0 && m != 0)
     {
         g->setMatrix(*m);
-        LOGI("SETTING MATRIX");
-        OSG_NOTICE << *m << std::endl;
-        //LOGI("SETTING MATRIX");
     }
 }
 

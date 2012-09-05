@@ -68,7 +68,6 @@ public class OSGOverlayCamera extends Activity {
 		Matrix m3 = new Matrix();
 		m3.makeTranslate(3.0f, 0, 0);
 		m3.preMult(m2);
-		Log.i(this.toString(),"Setting m3");
 		mt3.setMatrix(m3);
 		mt3.addChild(scene);
 		
