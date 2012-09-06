@@ -890,7 +890,7 @@ JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_core_Matrix_nativeInvert(
                                                                                 jlong matrix)
 {
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(cptr);
-    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(cptr);
+    osg::RefMatrixf *rhs = reinterpret_cast<osg::RefMatrixf *>(matrix);
     if(m != 0)
     {
         return m->invert(*rhs)?JNI_TRUE:JNI_FALSE;

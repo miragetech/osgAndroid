@@ -1,4 +1,4 @@
-/* @License 
+/* @License
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
  |                                                                             |
@@ -18,7 +18,6 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osgcamera;
 
-import org.openscenegraph.osg.core.Group;
 import org.openscenegraph.osg.core.Matrix;
 import org.openscenegraph.osg.core.MatrixTransform;
 import org.openscenegraph.osg.core.Node;
@@ -32,9 +31,10 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 
 public class OSGOverlayCamera extends Activity {
-	
+
 	CameraPreview mPreview;
 	Viewer mOverlaySurfaceView;
+	private MatrixTransform mRoot;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,27 +42,36 @@ public class OSGOverlayCamera extends Activity {
 		super.onCreate(savedInstanceState);
 		// Hide the window title.
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		Node scene = ReadFile.readNodeFile("/sdcard/axes.ive");
 
 		mPreview = new CameraPreview(this);
 		mOverlaySurfaceView = new Viewer(this);
 		mOverlaySurfaceView.init(true, 16, 8);
 		mOverlaySurfaceView.getCamera().setClearColor(0,0,0,0);
-		Group g = new Group();
 		
+		Node scene = ReadFile.readNodeFile("/sdcard/axes.ive");
+		
+		// Testing y-up conversion matrix
+		Matrix y_up_mat = 
+			new Matrix(1f,  0,  0, 0,
+					   0,   0, 1f, 0,
+				       0, -1f,  0, 0,
+				       0,   0,  0, 1);
+
+		mRoot = new MatrixTransform();
+		mRoot.setMatrix(y_up_mat);
+
 		MatrixTransform mt1 = new MatrixTransform();
 		Matrix m1 = new Matrix();
 		m1.makeTranslate(-3.0f, 0, 0);
 		mt1.setMatrix(m1);
 		mt1.addChild(scene);
-		
+
 		MatrixTransform mt2 = new MatrixTransform();
 		Matrix m2 = new Matrix();
 		m2.makeScale(2.0f, 2.0f, 2.0f);
 		mt2.setMatrix(m2);
 		mt2.addChild(scene);
-		
+
 		MatrixTransform mt3 = new MatrixTransform();
 		Matrix m3 = new Matrix(
 				1,   0, 0,0,
@@ -70,29 +79,30 @@ public class OSGOverlayCamera extends Activity {
 				0,   0, 1,0,
 				3.0f,0, 0,1);
 		Matrix s3 = new Matrix(
-				2.0f,0,   0,   0,
-				0,   2.0f,0,   0,
-				0,   0,   2.0f,0,
+				1.5f,0,   0,   0,
+				0,   1.5f,0,   0,
+				0,   0,   1.5f,0,
 				0,   0,   0,   1);
 		m3.preMult(s3);
 		mt3.setMatrix(m3);
 		mt3.addChild(scene);
-		
-		g.addChild(mt1); // x: -3.0f
-		g.addChild(mt2); // scale * 2.0f
-		g.addChild(mt3); // x: +3.0f
-		
-		mOverlaySurfaceView.setSceneData(g);
+
+		mRoot.addChild(mt1); // x: -3.0f
+		mRoot.addChild(mt2); // scale * 2.0f
+		mRoot.addChild(mt3); // x: +3.0f
+
+		mOverlaySurfaceView.setSceneData(mRoot);
+
 		mOverlaySurfaceView.setDefaultSettings();
 
 		setContentView(mOverlaySurfaceView);
 		addContentView(mPreview, new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 	}
-	
+
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 	}
-	
+
 }
