@@ -138,7 +138,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetUpView
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetViewport(JNIEnv *, jclass, jlong cptr, jint x, jint y, jint width, jint height)
 {
-    osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer::Viewer*> (cptr);
+    osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
     if (v == NULL)
         return;
     v->getEventQueue()->windowResize(x, y, width, height);
