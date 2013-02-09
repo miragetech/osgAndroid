@@ -24,6 +24,10 @@ LOCAL_LDLIBS    		:= -llog -lGLESv1_CM -ldl
 TARGET_LDLIBS := \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_osg.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_ive.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_rgb.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_openflight.a \
+$(OSG_SDK)/obj/local/armeabi/libft2.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_freetype.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgvolume.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgtext.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgterrain.a \
@@ -34,6 +38,18 @@ $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgmanipulator.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgfx.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osganimation.a \
 $(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osg.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgwidget.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgviewer.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgvolume.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgtext.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgterrain.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgsim.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgshadow.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgparticle.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgfx.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osganimation.a \
+$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osg.a \
+$(OSG_SDK)/obj/local/armeabi/libosgWidget.a \
 $(OSG_SDK)/obj/local/armeabi/libosgViewer.a \
 $(OSG_SDK)/obj/local/armeabi/libosgVolume.a \
 $(OSG_SDK)/obj/local/armeabi/libosgTerrain.a \

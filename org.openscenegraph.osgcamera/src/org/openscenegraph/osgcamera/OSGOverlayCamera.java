@@ -18,6 +18,8 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osgcamera;
 
+import java.io.File;
+
 import org.openscenegraph.osg.core.Matrix;
 import org.openscenegraph.osg.core.MatrixTransform;
 import org.openscenegraph.osg.core.Node;
@@ -27,6 +29,7 @@ import org.openscenegraph.osg.viewer.Viewer;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 
@@ -47,8 +50,9 @@ public class OSGOverlayCamera extends Activity {
 		mOverlaySurfaceView = new Viewer(this);
 		mOverlaySurfaceView.init(true, 16, 8);
 		mOverlaySurfaceView.getCamera().setClearColor(0,0,0,0);
-		
-		Node scene = ReadFile.readNodeFile("/sdcard/axes.ive");
+		File externalStorage = Environment.getExternalStorageDirectory();
+		String path = externalStorage + "/osgAndroid/axes.ive";
+		Node scene = ReadFile.readNodeFile(path);
 		
 		// Testing y-up conversion matrix
 		Matrix y_up_mat = 

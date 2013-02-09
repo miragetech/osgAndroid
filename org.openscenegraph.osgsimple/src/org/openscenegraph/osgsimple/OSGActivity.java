@@ -18,6 +18,8 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osgsimple;
 
+import java.io.File;
+
 import org.openscenegraph.osg.db.ReadFile;
 import org.openscenegraph.osg.viewer.Viewer;
 
@@ -25,6 +27,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.inputmethod.InputMethodManager;
@@ -38,7 +41,9 @@ public class OSGActivity extends Activity {
 		try {
 			mView = new Viewer(this);
 			mView.init(false, 16, 8);
-			mView.setSceneData(ReadFile.readNodeFile("/sdcard/axes.ive"));
+			File externalStorage = Environment.getExternalStorageDirectory();
+			String path = externalStorage + "/osgAndroid/dumptruck.osg";
+			mView.setSceneData(ReadFile.readNodeFile(path));
 			mView.setDefaultSettings();
 			setContentView(mView);
 		} catch (Exception e) {
