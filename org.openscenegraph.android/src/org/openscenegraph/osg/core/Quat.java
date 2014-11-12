@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,13 +18,9 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.core;
 
-import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.Native;
 
 public class Quat implements Native {
-	static {
-		Library.initLibrary();
-	}
 	private static native long nativeCreateQuat();
 	private static native void nativeDispose(long cptr);
 	private static native void nativeSet(long cptr, float q1, float q2, float q3, float q4);

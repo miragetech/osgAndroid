@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,13 +18,9 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.util;
 
-import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.core.Camera;
 
 public class GeometryUtils {
-	static {
-		Library.initLibrary();
-	}
 	private static native long nativeCreateScreenQuad(int x, int y, int w, int h, boolean isBackGround);
 	
 	public static Camera createScreenQuad(int x, int y, int w, int h, boolean isBackGround) {

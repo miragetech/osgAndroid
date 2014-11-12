@@ -1,6 +1,6 @@
 /* @License
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -20,6 +20,7 @@ package org.openscenegraph.osgcamera;
 
 import java.io.File;
 
+import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.core.Matrix;
 import org.openscenegraph.osg.core.MatrixTransform;
 import org.openscenegraph.osg.core.Node;
@@ -45,10 +46,10 @@ public class OSGOverlayCamera extends Activity {
 		super.onCreate(savedInstanceState);
 		// Hide the window title.
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-
+		Library.initLibrary("gles1");
 		mPreview = new CameraPreview(this);
 		mOverlaySurfaceView = new Viewer(this);
-		mOverlaySurfaceView.init(true, 16, 8);
+		mOverlaySurfaceView.init(true, 16, 8, Viewer.GLES1_CONTEXT);
 		mOverlaySurfaceView.getCamera().setClearColor(0,0,0,0);
 		File externalStorage = Environment.getExternalStorageDirectory();
 		String path = externalStorage + "/osgAndroid/axes.ive";

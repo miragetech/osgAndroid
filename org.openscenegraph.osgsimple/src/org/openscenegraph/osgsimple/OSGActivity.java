@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -20,7 +20,9 @@ package org.openscenegraph.osgsimple;
 
 import java.io.File;
 
+import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.db.ReadFile;
+import org.openscenegraph.osg.util.GLES2ShaderConverter;
 import org.openscenegraph.osg.viewer.Viewer;
 
 import android.app.Activity;
@@ -39,11 +41,14 @@ public class OSGActivity extends Activity {
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		try {
+			Library.initLibrary("gles1");
 			mView = new Viewer(this);
-			mView.init(false, 16, 8);
+			mView.init(false, 16, 8, Viewer.GLES1_CONTEXT);
 			File externalStorage = Environment.getExternalStorageDirectory();
-			String path = externalStorage + "/osgAndroid/dumptruck.osg";
-			mView.setSceneData(ReadFile.readNodeFile(path));
+			String path = externalStorage + "/osgAndroid/cessna.osg";
+
+			mView.setSceneData(/*GLES2ShaderConverter.apply(mView, */ReadFile.readNodeFile(path)/*)*/);
+			//mView.setSceneData(new Group());
 			mView.setDefaultSettings();
 			setContentView(mView);
 		} catch (Exception e) {

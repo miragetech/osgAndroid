@@ -1,6 +1,6 @@
 /* @License
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -1130,6 +1130,7 @@ JNIEXPORT jdouble JNICALL Java_org_openscenegraph_osg_core_AnimationPath_nativeG
 	{
 		return am->getFirstTime();
 	}
+	return 0;
 }
 JNIEXPORT jdouble JNICALL Java_org_openscenegraph_osg_core_AnimationPath_nativeGetLastTime(JNIEnv *, jclass, jlong cptr)
 {
@@ -1138,6 +1139,7 @@ JNIEXPORT jdouble JNICALL Java_org_openscenegraph_osg_core_AnimationPath_nativeG
 	{
 		return am->getLastTime();
 	}
+	return 0;
 }
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_AnimationPath_nativeSetLoopMode(JNIEnv *, jclass, jlong cptr,
 		jint lm)

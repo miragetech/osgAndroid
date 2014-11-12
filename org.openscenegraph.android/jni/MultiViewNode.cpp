@@ -219,6 +219,8 @@ bool UpdateMultiViewCamerasEventCallback::handle(const osgGA::GUIEventAdapter& e
             }
             return false;
         }
+    default:
+	break;
     }
     return false;
 }

@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,7 +18,6 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.viewer;
 
-import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.Native;
 
 /**
@@ -28,9 +27,6 @@ import org.openscenegraph.osg.Native;
  *
  */
 public class DisplaySettings implements Native {
-	static {
-		Library.initLibrary();
-	}
 
 	public static class DisplayType {
 		public static int MONITOR = 0; // / default

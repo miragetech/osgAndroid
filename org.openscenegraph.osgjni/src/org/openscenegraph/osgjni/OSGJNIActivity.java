@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -20,6 +20,7 @@ package org.openscenegraph.osgjni;
 
 import java.io.File;
 
+import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.core.MatrixTransform;
 import org.openscenegraph.osg.core.Node;
 import org.openscenegraph.osg.db.ReadFile;
@@ -40,8 +41,9 @@ public class OSGJNIActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		try {
+			Library.initLibrary("gles1");
 			mView = new Viewer(this);
-			mView.init(false, 16, 8);
+			mView.init(false, 16, 8, Viewer.GLES1_CONTEXT);
 			File externalStorage = Environment.getExternalStorageDirectory();
 			String path = externalStorage + "/osgAndroid/axes.ive";
 			Node node = ReadFile.readNodeFile(path);

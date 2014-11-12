@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,13 +18,9 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.db;
 
-import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.core.Node;
 
 public class ReadFile {
-	static {
-		Library.initLibrary();
-	}
 	private static native long nativeReadNodeFile(String filename);
 	
 	public static Node readNodeFile(String filename) {

@@ -1,71 +1,95 @@
 LOCAL_PATH := $(call my-dir)
-
-include $(CLEAR_VARS)
-
-# OSG SDK for Android 
-OSG_SDK := /Users/rgaitan/Projects/android/osg-3.0.1
-
-LOCAL_MODULE            := libjniosg
-
-LOCAL_C_INCLUDES        := $(OSG_SDK)/include
-LOCAL_CFLAGS    		:= -Werror -fno-short-enums
-LOCAL_CPPFLAGS  		:= -DOSG_LIBRARY_STATIC 
-LOCAL_LDFLAGS   		:= -L$(OSG_SDK)/obj/local/armeabi -fno-short-enums
-LOCAL_SRC_FILES 		:= \
+ 
+OSG_SRC_FILES 		:= \
 JNIosgViewer.cpp \
 JNIosg.cpp \
 JNIosgDB.cpp \
 JNIosgUtil.cpp \
 JNIUtils.cpp \
-MultiViewNode.cpp 
+MultiViewNode.cpp \
+GLES2ShaderGenVisitor.cpp
 
-LOCAL_LDLIBS    		:= -llog -lGLESv1_CM -ldl
+OSG_LDLIBS := \
+-losgdb_osg \
+-losgdb_ive \
+-losgdb_rgb \
+-losgdb_openflight \
+-losgdb_serializers_osgpresentation \
+-losgdb_serializers_osgvolume \
+-losgdb_serializers_osgtext \
+-losgdb_serializers_osgterrain \
+-losgdb_serializers_osgsim \
+-losgdb_serializers_osgshadow \
+-losgdb_serializers_osgparticle \
+-losgdb_serializers_osgmanipulator \
+-losgdb_serializers_osgfx \
+-losgdb_serializers_osganimation \
+-losgdb_serializers_osgui \
+-losgdb_serializers_osgviewer \
+-losgdb_serializers_osgga \
+-losgdb_serializers_osgutil \
+-losgdb_serializers_osg \
+-losgdb_deprecated_osgwidget \
+-losgdb_deprecated_osgviewer \
+-losgdb_deprecated_osgvolume \
+-losgdb_deprecated_osgtext \
+-losgdb_deprecated_osgterrain \
+-losgdb_deprecated_osgsim \
+-losgdb_deprecated_osgshadow \
+-losgdb_deprecated_osgparticle \
+-losgdb_deprecated_osgfx \
+-losgdb_deprecated_osganimation \
+-losgdb_deprecated_osg \
+-losgPresentation \
+-losgWidget \
+-losgUI \
+-losgViewer \
+-losgVolume \
+-losgTerrain \
+-losgText \
+-losgShadow \
+-losgSim \
+-losgParticle \
+-losgManipulator \
+-losgGA \
+-losgFX \
+-losgDB \
+-losgAnimation \
+-losgUtil \
+-losg \
+-lOpenThreads \
+-lgnustl_static  
 
-TARGET_LDLIBS := \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_osg.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_ive.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_rgb.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_openflight.a \
-$(OSG_SDK)/obj/local/armeabi/libft2.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_freetype.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgvolume.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgtext.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgterrain.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgsim.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgshadow.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgparticle.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgmanipulator.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osgfx.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osganimation.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_serializers_osg.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgwidget.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgviewer.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgvolume.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgtext.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgterrain.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgsim.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgshadow.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgparticle.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osgfx.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osganimation.a \
-$(OSG_SDK)/obj/local/armeabi/libosgdb_deprecated_osg.a \
-$(OSG_SDK)/obj/local/armeabi/libosgWidget.a \
-$(OSG_SDK)/obj/local/armeabi/libosgViewer.a \
-$(OSG_SDK)/obj/local/armeabi/libosgVolume.a \
-$(OSG_SDK)/obj/local/armeabi/libosgTerrain.a \
-$(OSG_SDK)/obj/local/armeabi/libosgText.a \
-$(OSG_SDK)/obj/local/armeabi/libosgShadow.a \
-$(OSG_SDK)/obj/local/armeabi/libosgSim.a \
-$(OSG_SDK)/obj/local/armeabi/libosgParticle.a \
-$(OSG_SDK)/obj/local/armeabi/libosgManipulator.a \
-$(OSG_SDK)/obj/local/armeabi/libosgGA.a \
-$(OSG_SDK)/obj/local/armeabi/libosgFX.a \
-$(OSG_SDK)/obj/local/armeabi/libosgDB.a \
-$(OSG_SDK)/obj/local/armeabi/libosgAnimation.a \
-$(OSG_SDK)/obj/local/armeabi/libosgUtil.a \
-$(OSG_SDK)/obj/local/armeabi/libosg.a \
-$(OSG_SDK)/obj/local/armeabi/libOpenThreads.a \
-$(OSG_SDK)/obj/local/armeabi/libgnustl_static.a
 
+### GLES1 build
+include $(CLEAR_VARS)
+OSG_SDK := /home/rgaitan/Projects/OSG/osg-trunk-static-armeabi-android-sdk
+OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
+OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+
+LOCAL_CFLAGS    		:= -Werror -fno-short-enums -fPIC
+LOCAL_CPPFLAGS  		:= -DOSG_LIBRARY_STATIC 
+LOCAL_SRC_FILES 		:= $(OSG_SRC_FILES)
+LOCAL_MODULE            := libjniosg-gles1
+LOCAL_LDLIBS    		:= -llog -lGLESv1_CM -ldl 
+LOCAL_C_INCLUDES        := $(OSG_SDK)/include
+TARGET_LDLIBS			:= $(OSG_LDLIBS)
+LOCAL_LDFLAGS			:= -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
 include $(BUILD_SHARED_LIBRARY)
 
+### GLES2 build
+include $(CLEAR_VARS)
+# OSG SDK for Android 
+OSG_SDK := /home/rgaitan/Projects/OSG/osg-trunk-gles2-static-armeabi-android-sdk
+OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
+OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+
+LOCAL_CFLAGS    		:= -Werror -fno-short-enums -fPIC
+LOCAL_CPPFLAGS  		:= -DOSG_LIBRARY_STATIC 
+LOCAL_SRC_FILES 		:= $(OSG_SRC_FILES)
+LOCAL_MODULE            := libjniosg-gles2
+LOCAL_LDLIBS    		:= -llog -lGLESv2 -ldl
+LOCAL_C_INCLUDES        := $(OSG_SDK)/include
+TARGET_LDLIBS			:= $(OSG_LDLIBS)
+LOCAL_LDFLAGS			:= -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
+include $(BUILD_SHARED_LIBRARY)

@@ -1,6 +1,6 @@
 /* @License
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -30,8 +30,8 @@
 
 
 USE_OSGPLUGIN(ive)
-USE_OSGPLUGIN(osg)
 USE_OSGPLUGIN(osg2)
+USE_OSGPLUGIN(osg)
 USE_OSGPLUGIN(rgb)
 USE_OSGPLUGIN(OpenFlight)
 
@@ -40,6 +40,7 @@ USE_OSGPLUGIN(OpenFlight)
 #endif
 
 USE_DOTOSGWRAPPER_LIBRARY(osg)
+//USE_DOTOSGWRAPPER_LIBRARY(osgAnimation)
 USE_DOTOSGWRAPPER_LIBRARY(osgFX)
 USE_DOTOSGWRAPPER_LIBRARY(osgParticle)
 USE_DOTOSGWRAPPER_LIBRARY(osgShadow)
@@ -51,6 +52,10 @@ USE_DOTOSGWRAPPER_LIBRARY(osgVolume)
 USE_DOTOSGWRAPPER_LIBRARY(osgWidget)
 
 USE_SERIALIZER_WRAPPER_LIBRARY(osg)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUtil)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgGA)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgViewer)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUI)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgAnimation)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgFX)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgManipulator)
@@ -60,6 +65,7 @@ USE_SERIALIZER_WRAPPER_LIBRARY(osgSim)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgTerrain)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgText)
 USE_SERIALIZER_WRAPPER_LIBRARY(osgVolume)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgPresentation)
 
 extern "C"
 {

@@ -1,6 +1,6 @@
 /* @License
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -29,6 +29,10 @@
 #include <osg/Matrix>
 #include <osg/Array>
 
+#include <osgViewer/Viewer>
+
+#include "GLES2ShaderGenVisitor.h"
+
 #define  LOG_TAG    "org.openscenegraph.osg.util"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
@@ -36,6 +40,21 @@
 
 extern "C"
 {
+
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_util_GLES2ShaderConverter_nativeApply(JNIEnv *env, jclass, jlong viewerCptr, jlong nodeCptr)
+{
+	osgViewer::Viewer* viewer = reinterpret_cast<osgViewer::Viewer*>(viewerCptr);
+	if(viewer == NULL)
+		return;
+	osg::Node* node = reinterpret_cast<osg::Node*>(nodeCptr);
+	if(node == NULL)
+	{
+		return;
+	}
+	osgUtil::GLES2ShaderGenVisitor gles2Visitor;
+	gles2Visitor.setRootStateSet(viewer->getCamera()->getOrCreateStateSet());
+	node->accept(gles2Visitor);
+}
 /**
  * GeometryUtils
  */

@@ -1,6 +1,6 @@
 /* @License
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -20,13 +20,14 @@
 #include <jni.h>
 #include <android/log.h>
 
+#include <osg/observer_ptr>
 #include <osg/Version>
 #include <osg/DisplaySettings>
 
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-#include <osgGA/TrackballManipulator>
+#include <osgGA/MultiTouchTrackballManipulator>
 #include <osgGA/StateSetManipulator>
 
 
@@ -42,24 +43,24 @@ public:
         switch ( severity ) {
 
             case osg::DEBUG_FP:
-                __android_log_print(ANDROID_LOG_VERBOSE,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_VERBOSE,LOG_TAG,"%s",message);
               break;
             case osg::DEBUG_INFO:
-                __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,"%s",message);
               break;
             case osg::NOTICE:
             case osg::INFO:
-                __android_log_print(ANDROID_LOG_INFO,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_INFO,LOG_TAG,"%s",message);
               break;
             case osg::WARN:
-                __android_log_print(ANDROID_LOG_WARN,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_WARN,LOG_TAG,"%s",message);
               break;
             case osg::FATAL:
             case osg::ALWAYS:
-                __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,"%s",message);
               break;
             default:
-                __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,message);
+                __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,"%s",message);
               break;
         }
     }
@@ -93,11 +94,12 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetDefaul
     osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer*> (cptr);
     if (viewer == NULL)
         return;
-    viewer->setCameraManipulator(new osgGA::TrackballManipulator());
+    viewer->setCameraManipulator(new osgGA::MultiTouchTrackballManipulator());
     viewer->addEventHandler(new osgViewer::StatsHandler);
     //viewer->getCamera()->setClearColor(osg::Vec4(0.0,0.0,0.0,0.0));
     // add the state manipulator
     viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
+    viewer->getCamera()->getOrCreateStateSet()->setGlobalDefaults();
 }
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeDisposeViewer(JNIEnv *, jclass, jlong cptr)
@@ -185,6 +187,42 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeKeyboard(
 		v->getEventQueue()->keyRelease((osgGA::GUIEventAdapter::KeySymbol) key);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+//Touch Events
+///////////////////////////////////////////////////////////////////////////////
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchBegan(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+{
+	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
+	if (v == NULL)
+		return;
+	v->getEventQueue()->touchBegan(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+}
+
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchMoved(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+{
+	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
+	if (v == NULL)
+		return;
+	v->getEventQueue()->touchMoved(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+}
+
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchEnded(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y, jint nTaps)
+{
+	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
+	if (v == NULL)
+		return;
+	v->getEventQueue()->touchEnded(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y,nTaps);
+}
+
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeAddTouchPoint(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+{
+	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
+	if (v == NULL)
+		return;
+	v->getEventQueue()->getCurrentEventState()->addTouchPoint(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+}
+
+
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeGetCamera(JNIEnv *, jclass, jlong cptr)
 {
 	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
@@ -229,6 +267,15 @@ JNIEXPORT jfloat JNICALL Java_org_openscenegraph_osg_viewer_Viewer_native_1getFu
                 return 1.0f;
 
         return v->getFusionDistanceValue();
+}
+
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_native_1home(
+                JNIEnv *env, jclass, jlong cptr) {
+        osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
+        if (v == NULL)
+                return;
+
+        v->home();
 }
 
 

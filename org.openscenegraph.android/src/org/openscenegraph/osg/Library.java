@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -24,10 +24,10 @@ public class Library {
 	private static boolean initialized = false;
 	private static String TAG = "OpenSceneGraph-Android Library";
 
-	public static void initLibrary() {
+	public static void initLibrary(String glesVersion) {
 		try {
 			if (!initialized) {
-				System.loadLibrary("jniosg");
+				System.loadLibrary("jniosg-"+ glesVersion);
 				Log.i(TAG, "Successfully initialized");
 				initialized = true;
 			}

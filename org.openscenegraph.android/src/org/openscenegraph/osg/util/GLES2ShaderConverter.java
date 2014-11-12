@@ -16,40 +16,17 @@
  | along with this software; if not, write to the Free Software Foundation,    |
  | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
  ---------------------------------------------------------------------------- */
-package org.openscenegraph.osg.core;
+package org.openscenegraph.osg.util;
 
+import org.openscenegraph.osg.core.Node;
+import org.openscenegraph.osg.viewer.Viewer;
 
-public class Group extends Node {
-
-	private static native long nativeCreateGroup();
-	private static native void nativeDispose(long cptr);
-	private static native boolean nativeAddChild(long cptr, long node);
-	private static native boolean nativeRemoveChild(long cptr, long node);
-	private static native int nativeGetNumChildren(long cptr);
+public class GLES2ShaderConverter {
+	private static native void nativeApply(long viewer, long nodeCptr);
 	
-	public Group(long cptr) {
-		super(cptr);	
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		dispose();
-		super.finalize();
-	}
-	
-	public Group() {
-		_cptr = nativeCreateGroup();
+	public static Node apply(Viewer viewer, Node node) {
+		nativeApply(viewer.getNativePtr(), node.getNativePtr());
+		return node;
 	}
 
-	public boolean addChild(Node node) {
-		return nativeAddChild(_cptr, node.getNativePtr());
-	}
-	
-	public boolean removeChild(Node node) {
-		return nativeRemoveChild(_cptr, node.getNativePtr());
-	}
-	
-	public int getNumChildren() {
-		return nativeGetNumChildren(_cptr);
-	}
 }

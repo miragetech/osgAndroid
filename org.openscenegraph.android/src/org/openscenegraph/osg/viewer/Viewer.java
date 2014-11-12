@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -23,7 +23,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.Native;
 import org.openscenegraph.osg.core.Camera;
 import org.openscenegraph.osg.core.Node;
@@ -38,16 +37,14 @@ import android.view.View;
 
 public class Viewer extends GLSurfaceView implements Native,
 		View.OnTouchListener {
-	static {
-		Library.initLibrary();
-	}
+
 	private long _cptr;
 	private static String TAG = "org.openscenegraph.osg.viewer.Viewer";
 	private static final boolean DEBUG = false;
-
 	public long getNativePtr() {
 		return _cptr;
 	}
+
 
 	/**
 	 * @return native pointer to the viewer
@@ -72,6 +69,11 @@ public class Viewer extends GLSurfaceView implements Native,
 
 	private native void nativeKeyboard(long cptr, int key, int x, int y,
 			boolean keydown);
+	
+	private native void nativeTouchBegan   (long cptr, int index, int state,float x, float y);
+	private native void nativeTouchEnded   (long cptr, int index, int state,float x, float y, int nTaps);
+	private native void nativeTouchMoved   (long cptr, int index, int state,float x, float y);
+	private native void nativeAddTouchPoint(long cptr, int index, int state,float x, float y);
 
 	private native void nativeSetUpViewerAsEmbedded(long cptr, int x, int y,
 			int width, int height);
@@ -87,6 +89,8 @@ public class Viewer extends GLSurfaceView implements Native,
     protected native void native_setFusionDistance(long cptr, float fusionDistance);
 
     protected native float native_getFusionDistance(long cptr);
+    
+    protected native void native_home(long cptr);
 
 	public Viewer(Context context) {
 		super(context);
@@ -229,6 +233,10 @@ public class Viewer extends GLSurfaceView implements Native,
 	public synchronized void keyboard(int key, int x, int y, boolean keydown) {
 		nativeKeyboard(_cptr, key, x, y, keydown);
 	}
+	
+	public synchronized void home() {
+		native_home(_cptr);
+	}
 
 	/**
 	 * Gets the viewer main camera
@@ -238,9 +246,13 @@ public class Viewer extends GLSurfaceView implements Native,
 	public Camera getCamera() {
 		return new Camera(nativeGetCamera(_cptr));
 	}
+	
+	public static final int GLES1_CONTEXT = 0x00010001;
+	public static final int GLES2_CONTEXT = 0x00020000;
+	public static final int GLES3_CONTEXT = 0x00030000; // not supported
 
 	public void init(boolean translucent, int depth, int stencil,
-			OSGRenderer renderer) {
+			OSGRenderer renderer, int glesVersion) {
 
 		/*
 		 * By default, GLSurfaceView() creates a RGB_565 opaque surface. If we
@@ -256,16 +268,34 @@ public class Viewer extends GLSurfaceView implements Native,
 		 * Setup the context factory for 2.0 rendering. See ContextFactory class
 		 * definition below
 		 */
-		// setEGLContextFactory(new ContextFactoryGLES20());
-		setEGLContextFactory(new ContextFactoryGLES11());
+		switch(glesVersion)
+		{
+		case GLES1_CONTEXT:
+			setEGLContextClientVersion(1);
+			//setEGLContextFactory(new ContextFactoryGLES11());
+			/*
+			 * We need to choose an EGLConfig that matches the format of our surface
+			 * exactly. This is going to be done in our custom config chooser. See
+			 * ConfigChooserGLES11 class definition below.
+			 */
+			//setEGLConfigChooser(translucent ? new ConfigChooserGLES11(8, 8, 8, 8, depth,
+			//		stencil) : new ConfigChooserGLES11(5, 6, 5, 0, depth, stencil));
+			break;
+		case GLES2_CONTEXT:
+			setEGLContextClientVersion(2);
+			//setEGLContextFactory(new ContextFactoryGLES20());
+			/*
+			 * We need to choose an EGLConfig that matches the format of our surface
+			 * exactly. This is going to be done in our custom config chooser. See
+			 * ConfigChooserGLES11 class definition below.
+			 */
+			//setEGLConfigChooser(translucent ? new ConfigChooserGLES20(8, 8, 8, 8, depth,
+			//		stencil) : new ConfigChooserGLES20(5, 6, 5, 0, depth, stencil));
+			break;
+		}
+		
 
-		/*
-		 * We need to choose an EGLConfig that matches the format of our surface
-		 * exactly. This is going to be done in our custom config chooser. See
-		 * ConfigChooser class definition below.
-		 */
-		setEGLConfigChooser(translucent ? new ConfigChooser(8, 8, 8, 8, depth,
-				stencil) : new ConfigChooser(5, 6, 5, 0, depth, stencil));
+
 
 		/* Set the renderer responsible for frame rendering */
 		setRenderer(renderer);
@@ -273,8 +303,8 @@ public class Viewer extends GLSurfaceView implements Native,
 		setOnTouchListener(this);
 	}
 
-	public void init(boolean translucent, int depth, int stencil) {
-		init(translucent, depth, stencil, new OSGRenderer(this));
+	public void init(boolean translucent, int depth, int stencil, int glesVersion) {
+		init(translucent, depth, stencil, new OSGRenderer(this), glesVersion);
 	}
 
 	private static class ContextFactoryGLES11 implements
@@ -305,10 +335,10 @@ public class Viewer extends GLSurfaceView implements Native,
 		}
 	}
 
-	private static class ConfigChooser implements
+	private static class ConfigChooserGLES11 implements
 			GLSurfaceView.EGLConfigChooser {
 
-		public ConfigChooser(int r, int g, int b, int a, int depth, int stencil) {
+		public ConfigChooserGLES11(int r, int g, int b, int a, int depth, int stencil) {
 			mRedSize = r;
 			mGreenSize = g;
 			mBlueSize = b;
@@ -478,7 +508,7 @@ public class Viewer extends GLSurfaceView implements Native,
 	}
 
 	public boolean onTouch(View arg0, MotionEvent event) {
-		int action = event.getAction() & MotionEvent.ACTION_MASK;
+		/*		int action = event.getAction() & MotionEvent.ACTION_MASK;
 
 		switch (action) {
 		case MotionEvent.ACTION_DOWN:
@@ -491,7 +521,36 @@ public class Viewer extends GLSurfaceView implements Native,
 			mouseMotion((int) event.getX(), (int) event.getY());
 			break;
 		}
-		return true;
+		return true;*/
+		
+        //int numPoints = event.getPointerCount();
+        int action        = event.getActionMasked();
+        int point         = event.getActionIndex();
+
+        switch(action)
+        {
+        case MotionEvent.ACTION_DOWN:
+        case MotionEvent.ACTION_POINTER_DOWN:
+        	nativeTouchBegan(_cptr, event.getPointerId(point), 1, event.getX(point), event.getY(point));
+        	break;
+        case MotionEvent.ACTION_UP:
+        case MotionEvent.ACTION_POINTER_UP:
+        	//We return 1 by default because Android doesn't support tracking of tap by touch.
+        	nativeTouchEnded(_cptr, event.getPointerId(point), 4, event.getX(point), event.getY(point),1);
+        	break;
+        case MotionEvent.ACTION_MOVE:
+        	nativeTouchMoved(_cptr, event.getPointerId(point), 2, event.getX(point), event.getY(point));
+        	break;
+        }
+        
+        /*for(int i = 0;i< numPoints;i++)
+        {
+        	if(i == numPoints) continue;
+        	nativeAddTouchPoint(_cptr, event.getPointerId(point), 2, event.getX(point), event.getY(point));
+        }*/
+
+        return true;
+
 	}
 
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
