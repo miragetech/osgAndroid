@@ -5,6 +5,7 @@ JNIosgViewer.cpp \
 JNIosg.cpp \
 JNIosgDB.cpp \
 JNIosgUtil.cpp \
+JNIosgGA.cpp \
 JNIUtils.cpp \
 MultiViewNode.cpp \
 GLES2ShaderGenVisitor.cpp

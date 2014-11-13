@@ -22,7 +22,6 @@ import java.io.File;
 
 import org.openscenegraph.osg.Library;
 import org.openscenegraph.osg.db.ReadFile;
-import org.openscenegraph.osg.util.GLES2ShaderConverter;
 import org.openscenegraph.osg.viewer.Viewer;
 
 import android.app.Activity;

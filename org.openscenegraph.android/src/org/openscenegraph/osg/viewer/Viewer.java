@@ -20,12 +20,12 @@ package org.openscenegraph.osg.viewer;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 
 import org.openscenegraph.osg.Native;
 import org.openscenegraph.osg.core.Camera;
 import org.openscenegraph.osg.core.Node;
+import org.openscenegraph.osg.ga.GUIEventAdapter;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
@@ -34,6 +34,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+
+
 
 public class Viewer extends GLSurfaceView implements Native,
 		View.OnTouchListener {
@@ -70,10 +72,10 @@ public class Viewer extends GLSurfaceView implements Native,
 	private native void nativeKeyboard(long cptr, int key, int x, int y,
 			boolean keydown);
 	
-	private native void nativeTouchBegan   (long cptr, int index, int state,float x, float y);
-	private native void nativeTouchEnded   (long cptr, int index, int state,float x, float y, int nTaps);
-	private native void nativeTouchMoved   (long cptr, int index, int state,float x, float y);
-	private native void nativeAddTouchPoint(long cptr, int index, int state,float x, float y);
+	private native long nativeTouchBegan   (long cptr, int index, int state,float x, float y);
+	private native long nativeTouchEnded   (long cptr, int index, int state,float x, float y, int nTaps);
+	private native long nativeTouchMoved   (long cptr, int index, int state,float x, float y);
+	private native void nativeAddTouchPoint(long cptr, long eaCptr, int index, int state,float x, float y);
 
 	private native void nativeSetUpViewerAsEmbedded(long cptr, int x, int y,
 			int width, int height);
@@ -278,8 +280,8 @@ public class Viewer extends GLSurfaceView implements Native,
 			 * exactly. This is going to be done in our custom config chooser. See
 			 * ConfigChooserGLES11 class definition below.
 			 */
-			//setEGLConfigChooser(translucent ? new ConfigChooserGLES11(8, 8, 8, 8, depth,
-			//		stencil) : new ConfigChooserGLES11(5, 6, 5, 0, depth, stencil));
+			setEGLConfigChooser(translucent ? new ConfigChooserGLES11(8, 8, 8, 8, depth,
+					stencil) : new ConfigChooserGLES11(5, 6, 5, 0, depth, stencil));
 			break;
 		case GLES2_CONTEXT:
 			setEGLContextClientVersion(2);
@@ -306,26 +308,10 @@ public class Viewer extends GLSurfaceView implements Native,
 	public void init(boolean translucent, int depth, int stencil, int glesVersion) {
 		init(translucent, depth, stencil, new OSGRenderer(this), glesVersion);
 	}
-
-	private static class ContextFactoryGLES11 implements
-			GLSurfaceView.EGLContextFactory {
-		private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
-
-		public EGLContext createContext(EGL10 egl, EGLDisplay display,
-				EGLConfig eglConfig) {
-			Log.w(TAG, "creating OpenGL ES 1.1 context");
-			checkEglError("Before eglCreateContext", egl);
-			int[] attrib_list = { EGL_CONTEXT_CLIENT_VERSION, 1, EGL10.EGL_NONE };
-			EGLContext context = egl.eglCreateContext(display, eglConfig,
-					EGL10.EGL_NO_CONTEXT, attrib_list);
-			checkEglError("After eglCreateContext", egl);
-			return context;
-		}
-
-		public void destroyContext(EGL10 egl, EGLDisplay display,
-				EGLContext context) {
-			egl.eglDestroyContext(display, context);
-		}
+	
+	public boolean performClick()
+	{
+		return super.performClick();
 	}
 
 	private static void checkEglError(String prompt, EGL10 egl) {
@@ -507,48 +493,42 @@ public class Viewer extends GLSurfaceView implements Native,
 		private int[] mValue = new int[1];
 	}
 
-	public boolean onTouch(View arg0, MotionEvent event) {
-		/*		int action = event.getAction() & MotionEvent.ACTION_MASK;
-
-		switch (action) {
-		case MotionEvent.ACTION_DOWN:
-			mouse(1, 1, (int) event.getX(), (int) event.getY());
-			break;
-		case MotionEvent.ACTION_UP:
-			mouse(1, 0, (int) event.getX(), (int) event.getY());
-			break;
-		case MotionEvent.ACTION_MOVE:
-			mouseMotion((int) event.getX(), (int) event.getY());
-			break;
-		}
-		return true;*/
-		
-        //int numPoints = event.getPointerCount();
-        int action        = event.getActionMasked();
-        int point         = event.getActionIndex();
-
-        switch(action)
+	public boolean onTouch(View v, MotionEvent event) {
+        int numPoints = event.getPointerCount();
+        GUIEventAdapter ea = null;
+        float factor = (numPoints > 1)?1.0f/500.0f:1.0f;
+        for(int i = 0; i<numPoints; i++)
         {
-        case MotionEvent.ACTION_DOWN:
-        case MotionEvent.ACTION_POINTER_DOWN:
-        	nativeTouchBegan(_cptr, event.getPointerId(point), 1, event.getX(point), event.getY(point));
-        	break;
-        case MotionEvent.ACTION_UP:
-        case MotionEvent.ACTION_POINTER_UP:
-        	//We return 1 by default because Android doesn't support tracking of tap by touch.
-        	nativeTouchEnded(_cptr, event.getPointerId(point), 4, event.getX(point), event.getY(point),1);
-        	break;
-        case MotionEvent.ACTION_MOVE:
-        	nativeTouchMoved(_cptr, event.getPointerId(point), 2, event.getX(point), event.getY(point));
-        	break;
+        	int action        = event.getActionMasked();
+        	//int point         = event.getActionIndex();
+        	float x = (numPoints > 1)?(v.getWidth() - event.getX(i)):event.getX(i);
+        	x*=factor;
+        	float y = event.getY(i)*factor;
+        	switch(action)
+        	{
+        	case MotionEvent.ACTION_DOWN:
+        	case MotionEvent.ACTION_POINTER_DOWN:
+        		if(ea == null)
+        			ea = new GUIEventAdapter(nativeTouchBegan(_cptr, event.getPointerId(i), 1, x, y ));
+        		else
+        			nativeAddTouchPoint(_cptr, ea.getNativePtr(),  event.getPointerId(i), 1, x, y );
+        		break;
+        	case MotionEvent.ACTION_UP:
+        		v.performClick();
+        	case MotionEvent.ACTION_POINTER_UP:
+        		if(ea == null)
+        			ea = new GUIEventAdapter(nativeTouchEnded(_cptr, event.getPointerId(i), 4, x, y ,1));
+        		else
+        			nativeAddTouchPoint(_cptr, ea.getNativePtr(),  event.getPointerId(i), 4, x, y );
+        		break;
+        	case MotionEvent.ACTION_MOVE:
+        		if(ea == null)
+        			ea = new GUIEventAdapter(nativeTouchMoved(_cptr, event.getPointerId(i), 2, x, y ));
+        		else
+        			nativeAddTouchPoint(_cptr, ea.getNativePtr(),  event.getPointerId(i), 2, x, y );
+        		break;
+        	}
         }
-        
-        /*for(int i = 0;i< numPoints;i++)
-        {
-        	if(i == numPoints) continue;
-        	nativeAddTouchPoint(_cptr, event.getPointerId(point), 2, event.getX(point), event.getY(point));
-        }*/
-
         return true;
 
 	}

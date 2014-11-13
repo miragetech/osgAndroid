@@ -28,6 +28,7 @@
 #include <osgViewer/ViewerEventHandlers>
 
 #include <osgGA/MultiTouchTrackballManipulator>
+#include <osgGA/GUIEventAdapter>
 #include <osgGA/StateSetManipulator>
 
 
@@ -190,36 +191,45 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeKeyboard(
 ///////////////////////////////////////////////////////////////////////////////
 //Touch Events
 ///////////////////////////////////////////////////////////////////////////////
-JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchBegan(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchBegan(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
 {
 	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
 	if (v == NULL)
-		return;
-	v->getEventQueue()->touchBegan(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+		return 0;
+	osgGA::GUIEventAdapter* me = v->getEventQueue()->touchBegan(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+	me->ref();
+	return reinterpret_cast<jlong>(me);
 }
 
-JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchMoved(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchMoved(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
 {
 	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
 	if (v == NULL)
-		return;
-	v->getEventQueue()->touchMoved(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+		return 0;
+	osgGA::GUIEventAdapter* me = v->getEventQueue()->touchMoved(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+	me->ref();
+	return reinterpret_cast<jlong>(me);
 }
 
-JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchEnded(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y, jint nTaps)
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeTouchEnded(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y, jint nTaps)
 {
 	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
 	if (v == NULL)
-		return;
-	v->getEventQueue()->touchEnded(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y,nTaps);
+		return 0;
+	osgGA::GUIEventAdapter* me = v->getEventQueue()->touchEnded(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y,nTaps);
+	me->ref();
+	return reinterpret_cast<jlong>(me);
 }
 
-JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeAddTouchPoint(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jint index, jint state, jfloat x, jfloat y)
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeAddTouchPoint(JNIEnv * /*env*/, jobject /*obj*/, jlong cptr, jlong eaCptr, jint index, jint state, jfloat x, jfloat y)
 {
 	osgViewer::Viewer *v = reinterpret_cast<osgViewer::Viewer*> (cptr);
 	if (v == NULL)
 		return;
-	v->getEventQueue()->getCurrentEventState()->addTouchPoint(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
+	osgGA::GUIEventAdapter* me = reinterpret_cast<osgGA::GUIEventAdapter*> (eaCptr);
+	if (me == NULL)
+		return;
+	me->addTouchPoint(index,(osgGA::GUIEventAdapter::TouchPhase)state,x,y);
 }
 
 
