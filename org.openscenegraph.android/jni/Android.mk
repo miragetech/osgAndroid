@@ -64,33 +64,42 @@ OSG_LDLIBS := \
 
 ### GLES1 build
 include $(CLEAR_VARS)
-OSG_SDK := /home/rgaitan/Projects/OSG/osg-trunk-static-armeabi-android-sdk
+OSG_SDK := /path/to/osg-sdk-gles1 #/home/rgaitan/Projects/OSG/osg-trunk-gles1-static-armeabi-android-sdk
 OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
 OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+ifneq (,$(wildcard $(OSG_SDK)/include/osg/Config))
 
-LOCAL_CFLAGS    		:= -Werror -fno-short-enums -fPIC
-LOCAL_CPPFLAGS  		:= -DOSG_LIBRARY_STATIC 
-LOCAL_SRC_FILES 		:= $(OSG_SRC_FILES)
-LOCAL_MODULE            := libjniosg-gles1
-LOCAL_LDLIBS    		:= -llog -lGLESv1_CM -ldl 
-LOCAL_C_INCLUDES        := $(OSG_SDK)/include
-TARGET_LDLIBS			:= $(OSG_LDLIBS)
-LOCAL_LDFLAGS			:= -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
-include $(BUILD_SHARED_LIBRARY)
+    APP_MODULES       := jniosg-gles1
+    LOCAL_CFLAGS      := -Werror -fno-short-enums -fPIC
+    LOCAL_CPPFLAGS    := -DOSG_LIBRARY_STATIC 
+    LOCAL_SRC_FILES   := $(OSG_SRC_FILES)
+    LOCAL_MODULE      := libjniosg-gles1
+    LOCAL_LDLIBS      := -llog -lGLESv1_CM -ldl 
+    LOCAL_C_INCLUDES  := $(OSG_SDK)/include
+    TARGET_LDLIBS     := $(OSG_LDLIBS)
+    LOCAL_LDFLAGS := -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
+    include $(BUILD_SHARED_LIBRARY)
+else
+    $(warning Unable to find osg/Config file in the headers, not building libjniosg-gles1 module)
+endif
 
 ### GLES2 build
 include $(CLEAR_VARS)
-# OSG SDK for Android 
-OSG_SDK := /home/rgaitan/Projects/OSG/osg-trunk-gles2-static-armeabi-android-sdk
+OSG_SDK := /path/to/osg-sdk-gles2 #/home/rgaitan/Projects/OSG/osg-trunk-gles2-static-armeabi-android-sdk
 OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
 OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+ifneq ( ,$(wildcard $(OSG_SDK)/include/osg/Config))
+    APP_MODULES       += jniosg-gles2
+    LOCAL_CFLAGS      := -Werror -fno-short-enums -fPIC
+    LOCAL_CPPFLAGS    := -DOSG_LIBRARY_STATIC 
+    LOCAL_SRC_FILES   := $(OSG_SRC_FILES)
+    LOCAL_MODULE      := libjniosg-gles2
+    LOCAL_LDLIBS      := -llog -lGLESv2 -ldl
+    LOCAL_C_INCLUDES  := $(OSG_SDK)/include
+    TARGET_LDLIBS     := $(OSG_LDLIBS)
+    LOCAL_LDFLAGS     := -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
+    include $(BUILD_SHARED_LIBRARY)
+else
+    $(warning Unable to find osg/Config file in the headers, not building libjniosg-gles2 module)
+endif
 
-LOCAL_CFLAGS    		:= -Werror -fno-short-enums -fPIC
-LOCAL_CPPFLAGS  		:= -DOSG_LIBRARY_STATIC 
-LOCAL_SRC_FILES 		:= $(OSG_SRC_FILES)
-LOCAL_MODULE            := libjniosg-gles2
-LOCAL_LDLIBS    		:= -llog -lGLESv2 -ldl
-LOCAL_C_INCLUDES        := $(OSG_SDK)/include
-TARGET_LDLIBS			:= $(OSG_LDLIBS)
-LOCAL_LDFLAGS			:= -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
-include $(BUILD_SHARED_LIBRARY)
