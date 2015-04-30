@@ -15,7 +15,6 @@ OSG_LDLIBS := \
 -losgdb_ive \
 -losgdb_rgb \
 -losgdb_openflight \
--losgdb_serializers_osgpresentation \
 -losgdb_serializers_osgvolume \
 -losgdb_serializers_osgtext \
 -losgdb_serializers_osgterrain \
@@ -58,15 +57,14 @@ OSG_LDLIBS := \
 -losgAnimation \
 -losgUtil \
 -losg \
--lOpenThreads \
--lgnustl_static  
+-lOpenThreads 
 
 
 ### GLES1 build
 include $(CLEAR_VARS)
-OSG_SDK := /path/to/osg-sdk-gles1 #/home/rgaitan/Projects/OSG/osg-trunk-gles1-static-armeabi-android-sdk
+OSG_SDK := <path-to-osg-gles1-sdk> #/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles1-sdk
 OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
-OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.8
 ifneq (,$(wildcard $(OSG_SDK)/include/osg/Config))
 
     APP_MODULES       := jniosg-gles1
@@ -85,9 +83,9 @@ endif
 
 ### GLES2 build
 include $(CLEAR_VARS)
-OSG_SDK := /path/to/osg-sdk-gles2 #/home/rgaitan/Projects/OSG/osg-trunk-gles2-static-armeabi-android-sdk
+OSG_SDK := <path-to-osg-gles2-sdk> #/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles2-sdk
 OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
-OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.3
+OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.8
 ifneq ( ,$(wildcard $(OSG_SDK)/include/osg/Config))
     APP_MODULES       += jniosg-gles2
     LOCAL_CFLAGS      := -Werror -fno-short-enums -fPIC

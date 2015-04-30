@@ -27,6 +27,7 @@ public class Library {
 	public static void initLibrary(String glesVersion) {
 		try {
 			if (!initialized) {
+				System.loadLibrary("gnustl_shared");
 				System.loadLibrary("jniosg-"+ glesVersion);
 				Log.i(TAG, "Successfully initialized");
 				initialized = true;
