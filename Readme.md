@@ -118,5 +118,5 @@ Contributors (use Name Surname - Company):
  + Rafael Gaitan - Mirage Technologies S.L.
  + Julio Campos - Mirage Technologies S.L.
  + Jorge Izquierdo - AI2
- + Jordi Torreas - AI2
+ + Jordi Torres - AI2
 
