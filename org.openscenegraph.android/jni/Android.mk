@@ -77,7 +77,9 @@ OSG_LDLIBS := \
 #-losgdb_serializers_osgpresentation \
 
 ### Static preparation
-OSG_HEAD:=/media/christian/DATA/android-osg-sdk/gles1
+OSG_HEAD:=<path-to-osg-gles1-sdk> 
+#/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles1-sdk 
+#/media/christian/DATA/android-osg-sdk/gles1
 OSG_SDK:=$(OSG_HEAD)/$(TARGET_ARCH_ABI)
 OSG_3RDPARTY_DIR:=obj/local/$(TARGET_ARCH_ABI)
 OSG_3RDPARTY_LIBS_DIR:=
@@ -116,7 +118,9 @@ LOCAL_INCLUDE:=${LOCAL_C_INCLUDES}
 
 ### GLES1 build
 include $(CLEAR_VARS)
-OSG_HEAD:=/media/christian/DATA/android-osg-sdk/gles1
+OSG_HEAD:=<path-to-osg-gles1-sdk>
+#/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles1-sdk
+#/media/christian/DATA/android-osg-sdk/gles1
 OSG_SDK:=${OSG_HEAD}/$(TARGET_ARCH_ABI)
 
 define add_lib_dir
@@ -145,7 +149,9 @@ endif
 
 ### GLES2 build
 include $(CLEAR_VARS)
-OSG_HEAD:=/media/christian/DATA/android-osg-sdk/gles2
+OSG_HEAD:=<path-to-osg-gles1-sdk>
+#/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles2-sdk
+#/media/christian/DATA/android-osg-sdk/gles2
 OSG_SDK2:=${OSG_HEAD}/$(TARGET_ARCH_ABI)
 ifneq ( ,$(wildcard $(OSG_SDK2)/include/osg/Config))
 
