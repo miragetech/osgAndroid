@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -16,33 +17,49 @@
  | along with this software; if not, write to the Free Software Foundation,    |
  | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
  ---------------------------------------------------------------------------- */
-package org.openscenegraph.osg.viewer;
+package org.openscenegraph.osg.core;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
-import android.opengl.GLSurfaceView;
-
-public class OSGRenderer implements GLSurfaceView.Renderer {
-	protected ViewerBase _viewer;
-
-	public OSGRenderer(ViewerBase viewer) {
-		_viewer = viewer;
+public class Texture extends Object {
+	private static native void nativeDispose(long cptr);
+	private static native void nativeSetImage(long cptr, int face, long image_cptr);
+	private static native long nativeGetImage(long cptr, int face);
+	
+	public Texture(long cptr)
+	{
+		super(cptr);
 	}
 	
-	public void onDrawFrame(GL10 gl) {
-		if(_viewer.getNativePtr()!=0)
-			_viewer.frame();
+	@Override
+	public void dispose()
+	{
+		if(_cptr != 0)
+			nativeDispose(_cptr);
+		_cptr = 0;
 	}
-
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		if(_viewer.getNativePtr()!=0)
+	
+	@Override
+	protected void finalize() throws Throwable {
+		dispose();
+		super.finalize();
+	}
+	
+	public void setImage(int face, Image image)
+	{
+		nativeSetImage(_cptr, face, image.getNativePtr());
+	}
+	
+	public Image getImage(int face)
+	{
+		long image_ptr = nativeGetImage(_cptr, face);
+		Image result;
+		if(image_ptr != 0)
 		{
-			_viewer.setUpViewerAsEmbedded(0, 0, width, height);
-			_viewer.setViewport(0, 0, width, height);
+			result = new Image(image_ptr);
 		}
-	}
-
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		else
+		{
+			result = new Image();
+		}
+		return result;
 	}
 }

@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,17 +19,16 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.core;
 
-
-public class Group extends Node {
-
-	private static native long nativeCreateGroup();
+public class Vec3Array extends Array {
 	private static native void nativeDispose(long cptr);
-	private static native boolean nativeAddChild(long cptr, long node);
-	private static native boolean nativeRemoveChild(long cptr, long node);
-	private static native int nativeGetNumChildren(long cptr);
-	private static native long nativeGetChild(long cptr, int i);
+	private static native long nativeCreateVec3Array();
+	private static native void nativePushBackVec3(long cptr, long vec_cptr);
+	private static native void nativePushBackFloatArray(long cptr, float[] array_cptr);
+	private static native long nativePopBack(long cptr);
+	private static native long nativeGet(long cptr, int i);
+	private static native boolean nativeSet(long cptr, int i, long vec_cptr);
 	
-	public Group(long cptr) {
+	public Vec3Array(long cptr) {
 		super(cptr);	
 	}
 	
@@ -38,29 +38,62 @@ public class Group extends Node {
 		super.finalize();
 	}
 	
-	public Group() {
-		_cptr = nativeCreateGroup();
+	public Vec3Array() {
+		_cptr = nativeCreateVec3Array();
+	}
+	
+	protected void push_back(float[] array)
+	{
+		nativePushBackFloatArray(_cptr, array);
+	}
+	
+	protected void push_back(Vec3 vector)
+	{
+		nativePushBackVec3(_cptr, vector.getNativePtr());
 	}
 
-	public boolean addChild(Node node) {
-		return nativeAddChild(_cptr, node.getNativePtr());
-	}
-	
-	public boolean removeChild(Node node) {
-		return nativeRemoveChild(_cptr, node.getNativePtr());
-	}
-	
-	public int getNumChildren() {
-		return nativeGetNumChildren(_cptr);
-	}
-	
-	public Node getChild(int index)
+	public void add(float[] value)
 	{
-		return new Node(nativeGetChild(_cptr, index));
+		push_back(value);
 	}
 	
-	public Node getLastChild()
+	public void add(Vec3 value)
 	{
-		return new Node(nativeGetChild(_cptr, getNumChildren()-1));
+		push_back(value);
+	}
+	
+	protected Vec3 pop_back()
+	{
+		return new Vec3(nativePopBack(_cptr));
+	}
+	
+	public Vec3 get(int i)
+	{
+		return new Vec3(nativeGet(_cptr, i));
+	}
+	
+	public boolean set(int i, Vec3 v)
+	{
+		return nativeSet(_cptr, i, v.getNativePtr());
+	}
+	
+	/*
+	 * the "toArray" function replaces the vector array with the
+	 * float array, thus the original vector array is empty after
+	 * this operation.
+	 */
+	public float[][] toArray()
+	{
+		int N = size();
+		int n = N-1;
+		float buffer[][] = new float[N][3];
+		for(int i = 0; i < N; i++)
+		{
+			Vec3 vec = pop_back();
+			buffer[n-i][0] = vec.x();
+			buffer[n-i][1] = vec.y();
+			buffer[n-i][2] = vec.z();
+		}
+		return buffer;
 	}
 }

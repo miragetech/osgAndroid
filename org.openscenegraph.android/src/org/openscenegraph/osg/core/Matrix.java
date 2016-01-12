@@ -26,11 +26,23 @@ public class Matrix implements Native {
 
 	private static native void nativeDispose(long cptr);
 
+	private static native long nativeInverse(long cptr);
+	
+	private static native long nativeTranspose(long cptr);
+	
+	private static native long nativeScale(long vec_cptr);
+	
 	private static native void nativeSet(long cptr, float a00, float a01,
 			float a02, float a03, float a10, float a11, float a12, float a13,
 			float a20, float a21, float a22, float a23, float a30, float a31,
 			float a32, float a33);
+	
+	private static native float nativeGet(long cptr, int row, int column);
 
+	private static native long nativeGetTranslation(long cptr);
+	
+	private static native long nativeGetRotation(long cptr);
+	
 	private static native boolean nativeIsIdentity(long cptr);
 
 	private static native void nativeMakeIdentity(long cptr);
@@ -51,6 +63,8 @@ public class Matrix implements Native {
 	private static native void nativePreMult(long cptr, long matrix);
 
 	private static native void nativePostMult(long cptr, long matrix);
+	
+	private static native void nativeMult(long cptr, long m1_ptr, long m2_ptr);
 	
 	private static native void nativeMakeLookAt(long cptr, long eye, long center, long up);
 
@@ -79,7 +93,34 @@ public class Matrix implements Native {
 	public Matrix() {
 		_cptr = nativeCreateMatrix();
 	}
+	
+	public static Matrix inverse(Matrix m)
+	{
+		return new Matrix(nativeInverse(m.getNativePtr()));
+	}
+	
+	public static Matrix transpose(Matrix m)
+	{
+		return new Matrix(nativeTranspose(m.getNativePtr()));
+	}
+	
+	public static Matrix scale(Vec3 scale_values)
+	{
+		return new Matrix(nativeScale(scale_values.getNativePtr()));
+	}
+	
+	public Matrix clone()
+	{
+		Matrix result = new Matrix();
+		result.set(get(0,0),get(0,1),get(0,2),get(0,3), get(1,0),get(1,1),get(1,2),get(1,3), get(2,0),get(2,1),get(2,2),get(2,3), get(3,0),get(3,1),get(3,2),get(3,3));
+		return result;
+	}
 
+	public float get(int row, int column)
+	{
+		return nativeGet(_cptr, row, column);
+	}
+	
 	public Matrix(float a00, float a01, float a02, float a03, float a10,
 			float a11, float a12, float a13, float a20, float a21, float a22,
 			float a23, float a30, float a31, float a32, float a33) {
@@ -104,6 +145,16 @@ public class Matrix implements Native {
 		return nativeIsIdentity(_cptr);
 	}
 
+	public Matrix getTranslation()
+	{
+		return new Matrix(nativeGetTranslation(_cptr));
+	}
+	
+	public Matrix getRotation()
+	{
+		return new Matrix(nativeGetRotation(_cptr));
+	}
+	
 	public void makeIdentity() {
 		nativeMakeIdentity(_cptr);
 	}
@@ -136,7 +187,50 @@ public class Matrix implements Native {
 		nativePostMult(_cptr, matrix.getNativePtr());
 	}
 	
+	public void mult(Matrix m1, Matrix m2)
+	{
+		nativeMult(_cptr, m1.getNativePtr(), m2.getNativePtr());
+	}
+	
 	public void makeLookAt(Vec3 eye, Vec3 center, Vec3 up) {
 		nativeMakeLookAt(_cptr, eye.getNativePtr(), center.getNativePtr(), up.getNativePtr());
+	}
+	
+	@Override
+	public String toString()
+	{
+		String output = "";
+		output+="[";
+		
+		output+="[";
+		output+=Float.toString(get(0,0))+",";
+		output+=Float.toString(get(0,1))+",";
+		output+=Float.toString(get(0,2))+",";
+		output+=Float.toString(get(0,3));
+		output+="]";
+		
+		output+="[";
+		output+=Float.toString(get(1,0))+",";
+		output+=Float.toString(get(1,1))+",";
+		output+=Float.toString(get(1,2))+",";
+		output+=Float.toString(get(1,3));
+		output+="]";
+		
+		output+="[";
+		output+=Float.toString(get(2,0))+",";
+		output+=Float.toString(get(2,1))+",";
+		output+=Float.toString(get(2,2))+",";
+		output+=Float.toString(get(2,3));
+		output+="]";
+		
+		output+="[";
+		output+=Float.toString(get(3,0))+",";
+		output+=Float.toString(get(3,1))+",";
+		output+=Float.toString(get(3,2))+",";
+		output+=Float.toString(get(3,3));
+		output+="]";
+		
+		output+="]";
+		return output;
 	}
 }

@@ -18,6 +18,9 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.core;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
 
 public class Image extends Node {
 
@@ -32,6 +35,12 @@ public class Image extends Node {
             byte [] data);
 
 	private static native void nativeDirty(long cptr);
+	private static native int nativeS(long cptr);
+	private static native int nativeT(long cptr);
+	private static native byte nativeGetRed(long cptr, int s, int t, int r);
+	private static native byte nativeGetGreen(long cptr, int s, int t, int r);
+	private static native byte nativeGetBlue(long cptr, int s, int t, int r);
+	private static native byte nativeGetAlpha(long cptr, int s, int t, int r);
 
 	public Image(long cptr) {
 		super(cptr);
@@ -61,5 +70,42 @@ public class Image extends Node {
 	public void dirty() {
 		nativeDirty(getNativePtr());
 	}
+	
+	public int s()
+	{
+		return nativeS(_cptr);
+	}
+	
+	public int t()
+	{
+		return nativeT(_cptr);
+	}
 
+	public byte getRed(int s, int t, int r)
+	{
+		return nativeGetRed(_cptr, s, t, r);
+	}
+	
+	public byte getGreen(int s, int t, int r)
+	{
+		return nativeGetGreen(_cptr, s, t, r);
+	}
+	
+	public byte getBlue(int s, int t, int r)
+	{
+		return nativeGetBlue(_cptr, s, t, r);
+	}
+	
+	public Bitmap toBitmap()
+	{
+		Bitmap result = Bitmap.createBitmap(s(), t(), Bitmap.Config.ARGB_8888);
+		for(int x = 0; x < s(); x++)
+		{
+			for(int y = 0; y < t(); y++)
+			{
+				result.setPixel(x, y, Color.argb(255, Integer.valueOf(getRed(x, y, 0)), Integer.valueOf(getGreen(x, y, 0)), Integer.valueOf(getBlue(x, y, 0))));
+			}
+		}
+		return result;
+	}
 }
