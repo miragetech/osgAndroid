@@ -1,0 +1,137 @@
+package org.openscenegraph.osg.core;
+
+import org.openscenegraph.osg.Native;
+
+public class Vec2 implements Native {
+
+	private static native long nativeCreateVec2();
+	private static native void nativeDispose(long cptr);
+	private static native float nativeX(long cptr);
+	private static native float nativeY(long cptr);
+	private static native void nativeSet(long cptr, float x, float y);
+	private static native void nativeSetX(long cptr, float value);
+	private static native void nativeSetY(long cptr, float value);
+	private static native float nativeLength(long cptr);
+	private static native float nativeLength2(long cptr);
+	private static native long nativeDiv(long cptr, float value);
+	private static native float nativeDotProduct(long cptr, long rhs);
+	private static native long nativeCrossProduct(long cptr, long rhs);
+	private static native long nativeEscalarProduct(long cptr, float value);
+	private static native long nativeSum(long cptr, long rhs);
+	private static native long nativeSub(long cptr, long rhs);
+	private static native float nativeNormalize(long cptr);
+	private static native long nativeNegation(long cptr);
+	
+	private long _cptr;
+	public long getNativePtr() {
+		return _cptr;
+	}
+	
+	public Vec2(long cptr) {
+		_cptr = cptr;	
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		dispose();
+		super.finalize();
+	}
+
+	public void dispose() {
+		if(_cptr != 0)
+			nativeDispose(_cptr);
+		_cptr = 0;
+	}
+	
+	public Vec2() {
+		_cptr = nativeCreateVec2();	
+	}
+	
+	public Vec2(float x, float y) {
+		_cptr = nativeCreateVec2();
+		set(x,y);
+	}
+	
+	public float x() {
+		return nativeX(_cptr);
+	}
+	
+	public float y() {
+		return nativeY(_cptr);
+	}
+	
+	public void set(float x, float y) {
+		nativeSet(_cptr, x, y);
+	}
+	
+	public void set(Vec2 v) {
+		set(v.x(),v.y());
+	}
+	
+	public void setX(float value) {
+		nativeSetX(_cptr,value);
+	}
+
+	public void setY(float value) {
+		nativeSetY(_cptr,value);
+	}
+
+	public String toString() {
+		return "(" + x() + "," + y() + ")";
+	}
+
+	public float length() {
+		return nativeLength(_cptr);
+	}
+
+	public float length2() {
+		return nativeLength2(_cptr);
+	}
+
+	/** Divide by scalar. */
+	public Vec2 div(float value) {
+		return new Vec2(nativeDiv(_cptr,value));
+	}
+
+	/** Dot product. */
+	public float dotProduct(Vec2 rhs) {
+		return nativeDotProduct(_cptr,rhs.getNativePtr());
+	}
+
+	/** Multiply by scalar. */
+	public Vec2 escalarProduct(float rhs) {
+		return new Vec2(nativeEscalarProduct(_cptr,rhs));
+	}
+
+	/** Binary vector add. */
+	public Vec2 sum(Vec2 rhs) {
+		return new Vec2(nativeSum(_cptr,rhs.getNativePtr()));
+	}
+
+	/** Binary vector subtract. */
+	public Vec2 sub(Vec2 rhs) {
+		return new Vec2(nativeSub(_cptr,rhs.getNativePtr()));
+
+	}
+
+	/** normalization of the vector. */
+	public float normalize() {
+		return nativeNormalize(_cptr);
+	}
+
+	/** Negation operator. Returns the negative of the Vec3d. */
+
+	public Vec2 negation() {
+		return new Vec2(nativeNegation(_cptr));
+	}
+	
+	@Override
+	public boolean equals(java.lang.Object obj) {
+
+		Vec2 in = (Vec2) obj;
+		
+		if(in.x()==x() && in.y()==y()) return true;
+		return super.equals(obj);
+	
+	}
+}

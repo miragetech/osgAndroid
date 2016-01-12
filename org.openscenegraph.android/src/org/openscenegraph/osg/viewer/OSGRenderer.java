@@ -1,6 +1,6 @@
 /* @License 
  -------------------------------------------------------------------------------
- | osgAndroid - Copyright (C) 2012 Rafael Gait‡n, Mirage Technologies S.L.     |
+ | osgAndroid - Copyright (C) 2012 Rafael Gaitï¿½n, Mirage Technologies S.L.     |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -24,19 +24,23 @@ import javax.microedition.khronos.opengles.GL10;
 import android.opengl.GLSurfaceView;
 
 public class OSGRenderer implements GLSurfaceView.Renderer {
-	protected Viewer _viewer;
+	protected ViewerBase _viewer;
 
-	public OSGRenderer(Viewer viewer) {
+	public OSGRenderer(ViewerBase viewer) {
 		_viewer = viewer;
 	}
 	
 	public void onDrawFrame(GL10 gl) {
-		_viewer.frame();
+		if(_viewer.getNativePtr()!=0)
+			_viewer.frame();
 	}
 
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		_viewer.setUpViewerAsEmbedded(0, 0, width, height);
-		_viewer.setViewport(0, 0, width, height);
+		if(_viewer.getNativePtr()!=0)
+		{
+			_viewer.setUpViewerAsEmbedded(0, 0, width, height);
+			_viewer.setViewport(0, 0, width, height);
+		}
 	}
 
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {

@@ -26,7 +26,11 @@ public class Camera extends Group implements Native  {
 
 	private static native void nativeSetClearColor(long cptr, float r, float g,
 			float b, float a);
+	
+	private static native void nativeSetClearColorVec(long cptr, long vec_cptr);
 
+	private static native long nativeGetViewMatrix(long cptr);
+	
 	private static native void nativeSetViewMatrixAsLookAt(long cptr,
 			long eyecptr, long centercptr, long upcptr);
 
@@ -69,6 +73,16 @@ public class Camera extends Group implements Native  {
 
 	public void setClearColor(float r, float g, float b, float a) {
 		nativeSetClearColor(_cptr, r, g, b, a);
+	}
+	
+	public void setClearColor(Vec4 rgba)
+	{
+		nativeSetClearColorVec(_cptr, rgba.getNativePtr());
+	}
+
+	public Matrix getViewMatrix()
+	{
+		return new Matrix(nativeGetViewMatrix(_cptr));
 	}
 
 	public void setViewMatrixAsLookAt(Vec3 eye, Vec3 center, Vec3 up) {

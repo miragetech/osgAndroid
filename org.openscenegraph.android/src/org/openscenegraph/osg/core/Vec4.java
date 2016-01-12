@@ -157,7 +157,7 @@ public class Vec4 implements Native {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(java.lang.Object obj) {
 
 		Vec4 in = (Vec4) obj;
 		

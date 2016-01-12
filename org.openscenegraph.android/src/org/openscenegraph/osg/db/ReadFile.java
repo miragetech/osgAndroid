@@ -19,9 +19,11 @@
 package org.openscenegraph.osg.db;
 
 import org.openscenegraph.osg.core.Node;
+import org.openscenegraph.osg.core.Image;
 
 public class ReadFile {
 	private static native long nativeReadNodeFile(String filename);
+	private static native long nativeReadImageFile(String filename);
 	
 	public static Node readNodeFile(String filename) {
 		long cptr = nativeReadNodeFile(filename);
@@ -30,4 +32,10 @@ public class ReadFile {
 		return new Node(cptr);
 	}
 
+	public static Image readImageFile(String filename) {
+		long cptr = nativeReadImageFile(filename);
+		if(cptr == 0)
+			return null;
+		return new Image(cptr);
+	}
 }

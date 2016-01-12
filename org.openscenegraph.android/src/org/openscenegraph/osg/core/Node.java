@@ -25,7 +25,10 @@ public class Node implements Native {
 	private static native void nativeSetUpdateCallback(long cptr, long ucb);
 	private static native void nativeSetRenderBinDetails(long cptr, int order, String bin);
 	private static native void nativeSetTexture2D(long cptr, long cptrimage);
+	private static native void nativeSetTexture(long cptr, long texture_cptr, int tex_unit);
 	private static native void nativeSetMode(long cptr, int mode, int value);
+	private static native void nativeSetPointSize(long cptr, float pt_size);
+	private static native void nativeSetLineWidth(long cptr, float line_size);
 	
     public static class Values
     {   
@@ -78,6 +81,12 @@ public class Node implements Native {
 	public void setTexture2D(Image image) {
 		nativeSetTexture2D(_cptr,image.getNativePtr());
 	}
+	
+	public void setTexture(Texture texture, int texture_unit)
+	{
+		nativeSetTexture(_cptr, texture.getNativePtr(), texture_unit);
+	}
+	
 	/** 
 	 * Sets the stateset mode to the value
 	 * @param mode GLenum mode values (GL_LIGHTING, GL_TEXTURE, GL_DEPTH_TEST, ...etc)
@@ -86,5 +95,19 @@ public class Node implements Native {
 	public void setMode(int mode, int value) {
 		nativeSetMode(_cptr,mode,value);
 	}
+	
+	public void setPointSize(float pointsize)
+	{
+		nativeSetPointSize(_cptr, pointsize);
+	}
 
+	public void setLineWidth(float width)
+	{
+		nativeSetLineWidth(_cptr, width);
+	}
+	
+	public long asNode()
+	{
+		return _cptr;
+	}
 }
