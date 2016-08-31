@@ -26,6 +26,7 @@ public class Group extends Node {
 	private static native boolean nativeAddChild(long cptr, long node);
 	private static native boolean nativeRemoveChild(long cptr, long node);
 	private static native int nativeGetNumChildren(long cptr);
+	private static native long nativeGetChild(long cptr, int i);
 	
 	public Group(long cptr) {
 		super(cptr);	
@@ -51,5 +52,15 @@ public class Group extends Node {
 	
 	public int getNumChildren() {
 		return nativeGetNumChildren(_cptr);
+	}
+	
+	public Node getChild(int index)
+	{
+		return new Node(nativeGetChild(_cptr, index));
+	}
+	
+	public Node getLastChild()
+	{
+		return new Node(nativeGetChild(_cptr, getNumChildren()-1));
 	}
 }
