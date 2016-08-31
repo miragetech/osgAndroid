@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -20,17 +21,15 @@ package org.openscenegraph.osg.core;
 
 import org.openscenegraph.osg.Native;
 
-public class Vec3 implements Native {
+public class Vec2 implements Native {
 
-	private static native long nativeCreateVec3();
+	private static native long nativeCreateVec2();
 	private static native void nativeDispose(long cptr);
 	private static native float nativeX(long cptr);
 	private static native float nativeY(long cptr);
-	private static native float nativeZ(long cptr);
-	private static native void nativeSet(long cptr, float x, float y, float z);
+	private static native void nativeSet(long cptr, float x, float y);
 	private static native void nativeSetX(long cptr, float value);
 	private static native void nativeSetY(long cptr, float value);
-	private static native void nativeSetZ(long cptr, float value);
 	private static native float nativeLength(long cptr);
 	private static native float nativeLength2(long cptr);
 	private static native long nativeDiv(long cptr, float value);
@@ -47,7 +46,7 @@ public class Vec3 implements Native {
 		return _cptr;
 	}
 	
-	public Vec3(long cptr) {
+	public Vec2(long cptr) {
 		_cptr = cptr;	
 	}
 	
@@ -63,13 +62,13 @@ public class Vec3 implements Native {
 		_cptr = 0;
 	}
 	
-	public Vec3() {
-		_cptr = nativeCreateVec3();	
+	public Vec2() {
+		_cptr = nativeCreateVec2();	
 	}
 	
-	public Vec3(float x, float y, float z) {
-		_cptr = nativeCreateVec3();
-		set(x,y,z);
+	public Vec2(float x, float y) {
+		_cptr = nativeCreateVec2();
+		set(x,y);
 	}
 	
 	public float x() {
@@ -80,16 +79,12 @@ public class Vec3 implements Native {
 		return nativeY(_cptr);
 	}
 	
-	public float z() {
-		return nativeZ(_cptr);
+	public void set(float x, float y) {
+		nativeSet(_cptr, x, y);
 	}
 	
-	public void set(float x, float y, float z) {
-		nativeSet(_cptr, x, y, z);
-	}
-	
-	public void set(Vec3 v) {
-		set(v.x(),v.y(),v.z());
+	public void set(Vec2 v) {
+		set(v.x(),v.y());
 	}
 	
 	public void setX(float value) {
@@ -100,12 +95,8 @@ public class Vec3 implements Native {
 		nativeSetY(_cptr,value);
 	}
 
-	public void setZ(float value) {
-		nativeSetZ(_cptr,value);
-	}
-
 	public String toString() {
-		return "(" + x() + "," + y() + "," + z() + ")";
+		return "(" + x() + "," + y() + ")";
 	}
 
 	public float length() {
@@ -117,33 +108,28 @@ public class Vec3 implements Native {
 	}
 
 	/** Divide by scalar. */
-	public Vec3 div(float value) {
-		return new Vec3(nativeDiv(_cptr,value));
+	public Vec2 div(float value) {
+		return new Vec2(nativeDiv(_cptr,value));
 	}
 
 	/** Dot product. */
-	public float dotProduct(Vec3 rhs) {
+	public float dotProduct(Vec2 rhs) {
 		return nativeDotProduct(_cptr,rhs.getNativePtr());
 	}
 
-	/** Cross product. */
-	public Vec3 crossProduct(Vec3 rhs) {
-		return new Vec3(nativeCrossProduct(_cptr,rhs.getNativePtr()));
-	}
-
 	/** Multiply by scalar. */
-	public Vec3 escalarProduct(float rhs) {
-		return new Vec3(nativeEscalarProduct(_cptr,rhs));
+	public Vec2 escalarProduct(float rhs) {
+		return new Vec2(nativeEscalarProduct(_cptr,rhs));
 	}
 
 	/** Binary vector add. */
-	public Vec3 sum(Vec3 rhs) {
-		return new Vec3(nativeSum(_cptr,rhs.getNativePtr()));
+	public Vec2 sum(Vec2 rhs) {
+		return new Vec2(nativeSum(_cptr,rhs.getNativePtr()));
 	}
 
 	/** Binary vector subtract. */
-	public Vec3 sub(Vec3 rhs) {
-		return new Vec3(nativeSub(_cptr,rhs.getNativePtr()));
+	public Vec2 sub(Vec2 rhs) {
+		return new Vec2(nativeSub(_cptr,rhs.getNativePtr()));
 
 	}
 
@@ -154,18 +140,17 @@ public class Vec3 implements Native {
 
 	/** Negation operator. Returns the negative of the Vec3d. */
 
-	public Vec3 negation() {
-		return new Vec3(nativeNegation(_cptr));
+	public Vec2 negation() {
+		return new Vec2(nativeNegation(_cptr));
 	}
 	
 	@Override
 	public boolean equals(java.lang.Object obj) {
 
-		Vec3 in = (Vec3) obj;
+		Vec2 in = (Vec2) obj;
 		
-		if(in.x()==x() && in.y()==y() && in.z()==z()) return true;
+		if(in.x()==x() && in.y()==y()) return true;
 		return super.equals(obj);
 	
 	}
-
 }
