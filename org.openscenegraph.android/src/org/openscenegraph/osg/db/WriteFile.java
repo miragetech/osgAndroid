@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,24 +19,30 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.db;
 
-import org.openscenegraph.osg.core.Node;
 import org.openscenegraph.osg.core.Image;
+import org.openscenegraph.osg.core.Node;
 
-public class ReadFile {
-	private static native long nativeReadNodeFile(String filename);
-	private static native long nativeReadImageFile(String filename);
+public class WriteFile {
+	private static native boolean nativeWriteNodeFile(String filename, long node_cptr);
+	private static native boolean nativeWriteImageFile(String filename, long image_cptr);
 	
-	public static Node readNodeFile(String filename) {
-		long cptr = nativeReadNodeFile(filename);
-		if(cptr == 0)
-			return null;
-		return new Node(cptr);
+	public static boolean writeNodeFile(String filename, Node node)
+	{
+		boolean result = false;
+		if(node.getNativePtr()!=0)
+			result = nativeWriteNodeFile(filename, node.getNativePtr());
+		else
+			result = false;
+		return result;
 	}
 
-	public static Image readImageFile(String filename) {
-		long cptr = nativeReadImageFile(filename);
-		if(cptr == 0)
-			return null;
-		return new Image(cptr);
+	public static boolean writeImageFile(String filename, Image image)
+	{
+		boolean result = false;
+		if(image.getNativePtr()!=0)
+			result = nativeWriteNodeFile(filename, image.getNativePtr());
+		else
+			result = false;
+		return result;
 	}
 }
