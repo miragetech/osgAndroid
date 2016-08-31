@@ -22,6 +22,7 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+
 import org.openscenegraph.osg.Native;
 import org.openscenegraph.osg.core.Camera;
 import org.openscenegraph.osg.core.Matrix;
@@ -41,12 +42,15 @@ import android.view.View;
 public class Viewer extends GLSurfaceView implements Native,
 		View.OnTouchListener {
 
+	//EGLContext mContext;
+	//EGLSurface
 	private long _cptr;
 	private static String TAG = "org.openscenegraph.osg.viewer.Viewer";
 	private static final boolean DEBUG = false;
 	public long getNativePtr() {
 		return _cptr;
 	}
+	
 
 
 	/**
@@ -103,6 +107,7 @@ public class Viewer extends GLSurfaceView implements Native,
 
 	public Viewer(Context context) {
 		super(context);
+		//Log.w(TAG, "Creating Viewer ...");
 		// init(false, 16, 8);
 		/* create the osg viewer */
 		_cptr = nativeCreateViewer();
@@ -116,6 +121,7 @@ public class Viewer extends GLSurfaceView implements Native,
 
 	@Override
 	protected void finalize() throws Throwable {
+		//Log.w(TAG, "Finalizing Viewer ...");
 		dispose();
 		super.finalize();
 	}

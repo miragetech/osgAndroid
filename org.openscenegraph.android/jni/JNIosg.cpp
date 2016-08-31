@@ -47,6 +47,8 @@
 extern "C"
 {
 
+
+
 /**
  * osg::Node
  */
@@ -1154,8 +1156,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Camera_nativeDispose(JNI
 		camera->unref();
 }
 
-JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Camera_nativeSetClearColor(JNIEnv *, jclass, jlong cptr,
-																			jfloat r, jfloat g, jfloat b, jfloat a)
+JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Camera_nativeSetClearColor(JNIEnv *, jclass, jlong cptr, jfloat r, jfloat g, jfloat b, jfloat a)
 {
 	osg::Camera *camera = reinterpret_cast<osg::Camera *>(cptr);
 	if(camera != 0)
@@ -1222,6 +1223,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Camera_nativeSetViewMatr
         camera->setViewMatrix(*m);
     }
 }
+
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Camera_nativeSetProjectionMatrix(JNIEnv *, jclass, jlong cptr,
                                                                             jlong cptrmatrix)

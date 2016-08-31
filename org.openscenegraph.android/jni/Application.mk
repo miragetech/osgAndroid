@@ -5,7 +5,8 @@ NDK_MODULE_PATH := $(call my-dir)
 
 APP_OPTIM := release
 
-APP_PLATFORM 	:= android-8
+APP_PLATFORM 	:= android-15
+APP_CFLAGS += -fexceptions
 APP_STL 	:= gnustl_shared
 APP_CFLAGS      += -fexceptions
 APP_CPPFLAGS 	:= -fexceptions -frtti

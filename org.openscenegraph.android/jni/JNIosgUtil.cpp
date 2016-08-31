@@ -22,14 +22,22 @@
 
 #include "JNIUtils.h"
 #include <stdlib.h>
+#include <sstream>
 
 #include <osg/Camera>
+#include <osg/Node>
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Matrix>
 #include <osg/Array>
+#include <osg/io_utils>
+#include <osg/PrimitiveSet>
 
 #include <osgViewer/Viewer>
+
+#include <osgUtil/IntersectionVisitor>
+#include <osgUtil/IntersectVisitor>
+#include <osgUtil/LineSegmentIntersector>
 
 #include "GLES2ShaderGenVisitor.h"
 
@@ -37,6 +45,50 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+#include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
+
+USE_OSGPLUGIN(ive)
+USE_OSGPLUGIN(osg2)
+USE_OSGPLUGIN(osg)
+USE_OSGPLUGIN(rgb)
+USE_OSGPLUGIN(bmp)
+USE_OSGPLUGIN(tga)
+USE_OSGPLUGIN(gif)
+USE_OSGPLUGIN(jpeg)
+USE_OSGPLUGIN(OpenFlight)
+
+#ifdef USE_FREETYPE
+    USE_OSGPLUGIN(freetype)
+#endif
+
+USE_DOTOSGWRAPPER_LIBRARY(osg)
+//USE_DOTOSGWRAPPER_LIBRARY(osgAnimation)
+USE_DOTOSGWRAPPER_LIBRARY(osgFX)
+USE_DOTOSGWRAPPER_LIBRARY(osgParticle)
+USE_DOTOSGWRAPPER_LIBRARY(osgShadow)
+USE_DOTOSGWRAPPER_LIBRARY(osgSim)
+USE_DOTOSGWRAPPER_LIBRARY(osgTerrain)
+USE_DOTOSGWRAPPER_LIBRARY(osgText)
+USE_DOTOSGWRAPPER_LIBRARY(osgViewer)
+USE_DOTOSGWRAPPER_LIBRARY(osgVolume)
+USE_DOTOSGWRAPPER_LIBRARY(osgWidget)
+
+USE_SERIALIZER_WRAPPER_LIBRARY(osg)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUtil)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgGA)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgViewer)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUI)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgAnimation)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgFX)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgManipulator)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgParticle)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgShadow)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgSim)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgTerrain)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgText)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgVolume)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgPresentation)
 
 extern "C"
 {
@@ -127,5 +179,285 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_GeometryUtils_nativeCre
 	return reinterpret_cast<jlong>(hud);
 
 }
+
+JNIEXPORT jint JNICALL Java_org_openscenegraph_osg_util_GeometryUtils_nativeTextureFromPose(JNIEnv *env, jclass, jstring in_filepath, jstring out_filepath, jlong Cg_ptr, jlong trmat_ptr, jlong R_ptr, jlong img_ptr)
+{
+	osg::Group* _node = reinterpret_cast<osg::Group*>(osgDB::readNodeFile(jstring2string(env,in_filepath)));
+	if(_node == 0)
+	{
+		LOGE("Error loading scene");
+		return 0;
+	}
+	if(_node->getNumChildren()<1)
+	{
+		LOGE("No geodes within scene.");
+		return 0;
+	}
+	osg::Geode* _geode = reinterpret_cast<osg::Geode*>(_node->getChild(_node->getNumChildren()-1));
+	if(_geode==NULL)
+	{
+		LOGE("Invalid Geode.");
+		return 0;
+	}
+	if(_geode->getNumDrawables()<1)
+	{
+		LOGE("Geode has no drawables");
+		return 0;
+	}
+	osg::Geometry* _geometry = reinterpret_cast<osg::Geometry*>(_geode->getDrawable(_geode->getNumDrawables()-1));
+	if(_geometry==NULL)
+	{
+		LOGE("Invalid Geometry.");
+		return 0;
+	}
+
+	int colored_point = 0;
+	bool use_texcoord = false, new_color_array = false;
+
+	osg::Vec3Array* varray = (osg::Vec3Array*)(_geometry->getVertexArray());
+	if(varray==NULL)
+	{
+		LOGE("Invalid VertexArray");
+		return 0;
+	}
+
+	osg::Vec4Array* carray = (osg::Vec4Array*)(_geometry->getColorArray());
+	if(carray==NULL)
+	{
+		carray = new osg::Vec4Array();
+		carray->ref();
+		new_color_array = true;
+	}
+	if(carray->getNumElements() < varray->getNumElements())
+	{
+		carray->resizeArray(varray->getNumElements());
+	}
+	osg::Vec2Array* tarray = (osg::Vec2Array*)(_geometry->getTexCoordArray(0));
+	if(tarray!=NULL)
+	{
+		use_texcoord = true;
+		if(tarray->getNumElements() < varray->getNumElements())
+		{
+			tarray->resizeArray(varray->getNumElements());
+		}
+	}
+
+	osg::Image* img = reinterpret_cast<osg::Image *>(img_ptr);
+	if(img==NULL)
+	{
+		LOGE("Invalid Image");
+		return 0;
+	}
+
+	RefVec3* Cg = reinterpret_cast<RefVec3 *>(Cg_ptr);
+	RefVec3* R = reinterpret_cast<RefVec3 *>(R_ptr);
+	osg::RefMatrixf* trmat = reinterpret_cast<osg::RefMatrixf* >(trmat_ptr);
+	osg::Matrixf rotmat;
+	rotmat.set((*trmat)(0,0), (*trmat)(0,1), (*trmat)(0,2), 0, (*trmat)(1,0), (*trmat)(1,1), (*trmat)(1,2), 0, (*trmat)(2,0), (*trmat)(2,1), (*trmat)(2,2), 0, 0, 0, 0, 1);
+
+	//std::stringstream sstrm;
+	//sstrm << "Mat: " << rotmat(0,0) << ", " << rotmat(0,1) << ", " << rotmat(0,2) << std::endl;
+	//sstrm << rotmat(1,0) << ", " << rotmat(1,1) << ", " << rotmat(1,2) << std::endl;
+	//sstrm << rotmat(2,0) << ", " << rotmat(2,1) << ", " << rotmat(2,2) << std::endl;
+	//sstrm << "Cg: " << Cg->x() << ", " << Cg->y() << ", " << Cg->z() << std::endl;
+	//__android_log_write(ANDROID_LOG_INFO,LOG_TAG,sstrm.str().c_str());
+
+	osg::Vec3 M, D;
+	for(unsigned int i = 0; i < varray->getNumElements(); i++)
+	{
+		M = varray->at(i);
+		D = rotmat * (M-(*Cg));
+		if(D.z()>0)
+		{
+			float u = ((R->z()*(D.x()/D.z()))+(R->x()/2.0f))/R->x();
+			float v = ((R->z()*(D.y()/D.z()))+(R->y()/2.0f))/R->y();
+			if( (u>0) && (u<1) && (v>0) && (v<1) )
+			{
+				osg::Vec2 tex_coord(u,v);
+				if(use_texcoord)
+				{
+					tarray->at((unsigned int)i) = tex_coord;
+				}
+				osg::Vec4 _color = Interpolate(tex_coord, img);
+				carray->at((unsigned int)i) = _color;
+				colored_point++;
+			}
+		}
+	}
+
+	if(new_color_array)
+	{
+		_geometry->setColorArray(carray);
+		_geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	}
+	if(use_texcoord)
+	{
+		_geometry->setTexCoordArray(0,tarray);
+	}
+
+	osgDB::writeNodeFile(*_node, jstring2string(env,out_filepath));
+
+	return reinterpret_cast<jint>(colored_point);
+}
+
+JNIEXPORT jint JNICALL Java_org_openscenegraph_osg_util_GeometryUtils_nativeTextureFromPoseImgfile(JNIEnv *env, jclass, jstring in_filepath, jstring out_filepath, jlong Cg_ptr, jlong trmat_ptr, jlong R_ptr, jstring img_filename)
+{
+	osg::Group* _node = reinterpret_cast<osg::Group*>(osgDB::readNodeFile(jstring2string(env,in_filepath)));
+	if(_node == 0)
+	{
+		LOGE("Error loading scene");
+		return 0;
+	}
+	if(_node->getNumChildren()<1)
+	{
+		LOGE("No geodes within scene.");
+		return 0;
+	}
+	osg::Geode* _geode = reinterpret_cast<osg::Geode*>(_node->getChild(_node->getNumChildren()-1));
+	if(_geode==NULL)
+	{
+		LOGE("Invalid Geode.");
+		return 0;
+	}
+	if(_geode->getNumDrawables()<1)
+	{
+		LOGE("Geode has no drawables");
+		return 0;
+	}
+	osg::Geometry* _geometry = reinterpret_cast<osg::Geometry*>(_geode->getDrawable(_geode->getNumDrawables()-1));
+	if(_geometry==NULL)
+	{
+		LOGE("Invalid Geometry.");
+		return 0;
+	}
+
+	int colored_point = 0;
+	bool use_texcoord = false, new_color_array = false;
+
+	osg::Vec3Array* varray = (osg::Vec3Array*)(_geometry->getVertexArray());
+	if(varray==NULL)
+	{
+		LOGE("Invalid VertexArray");
+		return 0;
+	}
+
+	osg::Vec4Array* carray = (osg::Vec4Array*)(_geometry->getColorArray());
+	if(carray==NULL)
+	{
+		carray = new osg::Vec4Array();
+		carray->ref();
+		new_color_array = true;
+	}
+	if(carray->getNumElements() < varray->getNumElements())
+	{
+		carray->resizeArray(varray->getNumElements());
+	}
+	osg::Vec2Array* tarray = (osg::Vec2Array*)(_geometry->getTexCoordArray(0));
+	if(tarray!=NULL)
+	{
+		use_texcoord = true;
+		if(tarray->getNumElements() < varray->getNumElements())
+		{
+			tarray->resizeArray(varray->getNumElements());
+		}
+	}
+
+	osg::Image* img = osgDB::readImageFile(jstring2string(env,img_filename));
+	if(img==NULL)
+	{
+		LOGE("Invalid Image");
+		return 0;
+	}
+
+	RefVec3* Cg = reinterpret_cast<RefVec3 *>(Cg_ptr);
+	RefVec3* R = reinterpret_cast<RefVec3 *>(R_ptr);
+	osg::RefMatrixf* trmat = reinterpret_cast<osg::RefMatrixf* >(trmat_ptr);
+	osg::Matrixf rotmat;
+	rotmat.set((*trmat)(0,0), (*trmat)(0,1), (*trmat)(0,2), 0, (*trmat)(1,0), (*trmat)(1,1), (*trmat)(1,2), 0, (*trmat)(2,0), (*trmat)(2,1), (*trmat)(2,2), 0, 0, 0, 0, 1);
+
+	//std::stringstream sstrm;
+	//sstrm << "Mat: " << rotmat(0,0) << ", " << rotmat(0,1) << ", " << rotmat(0,2) << std::endl;
+	//sstrm << rotmat(1,0) << ", " << rotmat(1,1) << ", " << rotmat(1,2) << std::endl;
+	//sstrm << rotmat(2,0) << ", " << rotmat(2,1) << ", " << rotmat(2,2) << std::endl;
+	//sstrm << "Cg: " << Cg->x() << ", " << Cg->y() << ", " << Cg->z() << std::endl;
+	//__android_log_write(ANDROID_LOG_INFO,LOG_TAG,sstrm.str().c_str());
+
+	osg::Vec3 M, D;
+	for(unsigned int i = 0; i < varray->getNumElements(); i++)
+	{
+		M = varray->at(i);
+		D = rotmat * (M-(*Cg));
+		if(D.z()>0)
+		{
+			float u = ((R->z()*(D.x()/D.z()))+(R->x()/2.0f))/R->x();
+			float v = ((R->z()*(D.y()/D.z()))+(R->y()/2.0f))/R->y();
+			if( (u>0) && (u<1) && (v>0) && (v<1) )
+			{
+				osg::Vec2 tex_coord(u,v);
+				if(use_texcoord)
+				{
+					tarray->at((unsigned int)i) = tex_coord;
+				}
+				osg::Vec4 _color = Interpolate(tex_coord, img);
+				carray->at((unsigned int)i) = _color;
+				colored_point++;
+			}
+		}
+	}
+
+	if(new_color_array)
+	{
+		_geometry->setColorArray(carray);
+		_geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+	}
+	if(use_texcoord)
+	{
+		_geometry->setTexCoordArray(0,tarray);
+	}
+
+	osgDB::writeNodeFile(*_node, jstring2string(env,out_filepath));
+	return reinterpret_cast<jint>(colored_point);
+}
+
+/*
+ * IntersectorGroup
+ */
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeCreateIntersectorGroup(JNIEnv* env, jclass)
+{
+	osgUtil::IntersectorGroup* g = new osgUtil::IntersectorGroup();
+	g->ref();
+	return reinterpret_cast<jlong>(g);
+}
+
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeDispose(JNIEnv* env, jclass, jlong cptr)
+{
+	osgUtil::IntersectorGroup *g = reinterpret_cast<osgUtil::IntersectorGroup *>(cptr);
+    if(g!=0)
+        g->unref();
+}
+
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeAddIntersector(JNIEnv* env, jclass, jlong cptr, jfloat x, jfloat y)
+{
+	osgUtil::IntersectorGroup *g = reinterpret_cast<osgUtil::IntersectorGroup *>(cptr);
+	if(g!=0)
+	{
+		g->addIntersector( new osgUtil::LineSegmentIntersector( osgUtil::Intersector::WINDOW, x,y ) );
+	}
+}
+
+/*
+ * IntersectionVisitor
+ */
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectionVisitor_nativeCreateIntersectionVisitor(JNIEnv* env, jclass, jlong base_ptr)
+{
+	osgUtil::IntersectionVisitor* iv;
+	if(base_ptr==0)
+		iv = new osgUtil::IntersectionVisitor();
+	else
+		iv = reinterpret_cast<osgUtil::IntersectionVisitor*>(base_ptr);
+	iv->ref();
+	return reinterpret_cast<jlong>(iv);
+}
+
 
 }

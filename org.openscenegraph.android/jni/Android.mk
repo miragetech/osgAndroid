@@ -74,6 +74,7 @@ OSG_LDLIBS := \
 -lcurl \
 -lzlib
 
+
 ### Static preparation
 OSG_HEAD:=<path-to-osg-gles1-sdk> 
 #OSG_HEAD:=/media/christian/DATA/android-osg-sdk/gles1

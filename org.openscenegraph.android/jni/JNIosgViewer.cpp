@@ -220,7 +220,9 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetViewMa
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetViewMatrixDistance(JNIEnv* env, jclass, jlong cptr, jlong matrix_ptr, jdouble distance)
 {
+
     osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer *>(cptr);
+
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(matrix_ptr);
     if(viewer != 0 && m!=0)
     {
@@ -251,6 +253,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetPerspe
     osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer*> (cptr);
     if (viewer == NULL)
         return;
+
     viewer->getCamera()->setProjectionMatrix(osg::Matrixd::perspective(osg::RadiansToDegrees(fov), jfloat(width)/jfloat(height), 0.1, 1500.0));
 }
 
@@ -358,6 +361,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeKeyboard(
 
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_OffScreenViewer_nativeCreatePBufferViewer(JNIEnv* env, jclass, jint width, jint height, jfloat fov)
 {
+
     osg::setNotifyLevel(osg::WARN);
     //osg::setNotifyLevel(osg::INFO);
     osg::setNotifyHandler( new OsgMsgNotifyHandler() );
@@ -404,6 +408,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_OffScreenViewer_native
     osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer*> (cptr);
     if (viewer == NULL)
         return;
+
     viewer->getCamera()->setProjectionMatrix(osg::Matrixd::perspective(osg::RadiansToDegrees(fov), jfloat(width)/jfloat(height), 0.1, 1500.0));
     osg::Matrixd lookat_matrix = osg::Matrixd::lookAt(osg::Vec3d(0.0, 0.0, -1.0), osg::Vec3d(0.0, 0.0, 1.0), osg::Vec3d(0.0, 1.0, 0.0));
     viewer->getCamera()->setViewMatrix(lookat_matrix);
@@ -735,6 +740,8 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_native_1home(
 
 
 
+
+
 ////// DisplaySettings ////////////
 
 
@@ -836,10 +843,11 @@ JNIEXPORT void  JNICALL Java_org_openscenegraph_osg_viewer_DisplaySettings_nativ
 	osg::DisplaySettings* ds=  reinterpret_cast<osg::DisplaySettings*>(cptr);
 	ds->setNumMultiSamples(samples);	
 }
-JNIEXPORT jint  JNICALL Java_org_openscenegraph_osg_viewer_DisplaySettings_native_1getNumMultiSamples(JNIEnv *, jclass,jlong cptr)
+JNIEXPORT jint JNICALL Java_org_openscenegraph_osg_viewer_DisplaySettings_native_1getNumMultiSamples(JNIEnv *, jclass,jlong cptr)
 {
 	osg::DisplaySettings* ds=  reinterpret_cast<osg::DisplaySettings*>(cptr);
 	return ds->getNumMultiSamples();	
 }
+
 
 }
