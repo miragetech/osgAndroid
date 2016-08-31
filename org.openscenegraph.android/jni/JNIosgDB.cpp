@@ -20,9 +20,15 @@
 #include <jni.h>
 #include <android/log.h>
 
+#include <osg/io_utils>
+#include <osg/ImageUtils>
+
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 
 #include "JNIUtils.h"
+#include <stdlib.h>
+#include <sstream>
 
 #define  LOG_TAG    "org.openscenegraph.osg.db.JNIosgDB"
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -33,6 +39,10 @@ USE_OSGPLUGIN(ive)
 USE_OSGPLUGIN(osg2)
 USE_OSGPLUGIN(osg)
 USE_OSGPLUGIN(rgb)
+USE_OSGPLUGIN(bmp)
+USE_OSGPLUGIN(tga)
+USE_OSGPLUGIN(gif)
+USE_OSGPLUGIN(jpeg)
 USE_OSGPLUGIN(OpenFlight)
 
 #ifdef USE_FREETYPE
@@ -83,6 +93,42 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_db_ReadFile_nativeReadNodeFi
 	node->ref();
 	return reinterpret_cast<jlong>(node);
 
+}
+
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_db_ReadFile_nativeReadImageFile(JNIEnv *env, jclass, jstring filename)
+{
+	//__android_log_write(ANDROID_LOG_INFO,LOG_TAG,jstring2string(env,filename).c_str());
+	osg::Image* node = osgDB::readImageFile(jstring2string(env,filename));
+	if(node == 0)
+	{
+		LOGE("Error loading image");
+		return 0;
+	}
+	node->ref();
+	return reinterpret_cast<jlong>(node);
+
+}
+
+JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_db_WriteFile_nativeWriteNodeFile(JNIEnv* env, jclass, jstring filename, jlong node_cptr)
+{
+	#define LOG_TAG "org.openscenegraph.osg.db"
+	osg::Node* node = reinterpret_cast<osg::Node*>(node_cptr);
+	if(node!=0)
+	{
+		return osgDB::writeNodeFile(*node, jstring2string(env,filename));
+	}
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_db_WriteFile_nativeWriteImageFile(JNIEnv* env, jclass, jstring filename, jlong image_cptr)
+{
+	#define LOG_TAG "org.openscenegraph.osg.db"
+	osg::Image* image = reinterpret_cast<osg::Image*>(image_cptr);
+	if(image!=NULL)
+	{
+		return osgDB::writeImageFile(*image, jstring2string(env,filename));
+	}
+	return false;
 }
 
 }
