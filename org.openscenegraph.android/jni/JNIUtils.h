@@ -22,9 +22,11 @@
 #include <string>
 
 #include <osg/Referenced>
+#include <osg/Vec2>
 #include <osg/Vec3>
 #include <osg/Vec4>
 #include <osg/Quat>
+#include <osg/Image>
 
 extern std::string jstring2string(JNIEnv *env, jstring jstr);
 
@@ -37,6 +39,7 @@ public:
 protected:
 	~ReferencedType() { }
 };
+typedef ReferencedType<osg::Vec2> RefVec2;
 typedef ReferencedType<osg::Vec3> RefVec3;
 typedef ReferencedType<osg::Vec4> RefVec4;
 typedef ReferencedType<osg::Quat> RefQuat;
