@@ -97,7 +97,6 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_db_ReadFile_nativeReadNodeFi
 
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_db_ReadFile_nativeReadImageFile(JNIEnv *env, jclass, jstring filename)
 {
-	//__android_log_write(ANDROID_LOG_INFO,LOG_TAG,jstring2string(env,filename).c_str());
 	osg::Image* node = osgDB::readImageFile(jstring2string(env,filename));
 	if(node == 0)
 	{
@@ -111,7 +110,6 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_db_ReadFile_nativeReadImageF
 
 JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_db_WriteFile_nativeWriteNodeFile(JNIEnv* env, jclass, jstring filename, jlong node_cptr)
 {
-	#define LOG_TAG "org.openscenegraph.osg.db"
 	osg::Node* node = reinterpret_cast<osg::Node*>(node_cptr);
 	if(node!=0)
 	{
@@ -122,7 +120,6 @@ JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_db_WriteFile_nativeWriteN
 
 JNIEXPORT jboolean JNICALL Java_org_openscenegraph_osg_db_WriteFile_nativeWriteImageFile(JNIEnv* env, jclass, jstring filename, jlong image_cptr)
 {
-	#define LOG_TAG "org.openscenegraph.osg.db"
 	osg::Image* image = reinterpret_cast<osg::Image*>(image_cptr);
 	if(image!=NULL)
 	{
