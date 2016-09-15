@@ -46,8 +46,6 @@ public class Geometry extends Drawable {
 	private static native void nativeSetNormalBinding(long cptr, int binding);
 	private static native boolean nativeAddPrimitiveSet(long cptr, long set_cptr);
 	private static native void nativeSetPrimitiveSetList(long cptr, long list_cptr);
-	private static native boolean nativeTextureFromPosePoint(long cptr, int i, long Cg_ptr, long trmat_ptr, long R_ptr, long img_ptr);
-	private static native int nativeTextureFromPose(long cptr, long Cg_ptr, long trmat_ptr, long R_ptr, long img_ptr);
 	
 	public Geometry(long cptr) {
 		super(cptr);	
@@ -148,27 +146,5 @@ public class Geometry extends Drawable {
 	
 	public boolean addPrimitiveSet(PrimitiveSet primitiveset) {
 		return nativeAddPrimitiveSet(_cptr, primitiveset.getNativePtr());
-	}
-	
-	public int TextureFromPose(Vec3 Cg, Matrix trmat, Vec3 RvecCam, Image img)
-	{
-		if(img==null)
-		{
-			Log.e("org.openscenegraph.osg.core.Geometry", "Texture from Pose: image input is null - ABORT.");
-			return 0;
-		}
-		
-		return nativeTextureFromPose(_cptr, Cg.getNativePtr(), trmat.getNativePtr(), RvecCam.getNativePtr(), img.getNativePtr());
-	}
-	
-	public boolean TextureFromPosePoint(int index, Vec3 Cg, Matrix trmat, Vec3 RvecCam, Image img)
-	{
-		if(img==null)
-		{
-			Log.e("org.openscenegraph.osg.core.Geometry", "Texture from Pose: image input is null - ABORT.");
-			return false;
-		}
-		
-		return nativeTextureFromPosePoint(_cptr, index, Cg.getNativePtr(), trmat.getNativePtr(), RvecCam.getNativePtr(), img.getNativePtr());
 	}	
 }
