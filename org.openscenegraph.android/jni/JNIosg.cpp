@@ -312,7 +312,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetVertex
 
 	int array_n = env->GetArrayLength(inputBuffer);
 	//printf("Array size: %i\n", array_n);
-	osg::Vec3Array* _array = new osg::Vec3Array();
+	osg::Vec3Array* array = new osg::Vec3Array();
 
 	jobject objArray;
 	jsize subarray_n;
@@ -325,14 +325,14 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetVertex
 		if( subarray_n>2 )
 		{
 			data = env->GetFloatArrayElements(*cdata, 0);
-			_array->push_back(osg::Vec3(data[0] , data[1], data[2]));
+			array->push_back(osg::Vec3(data[0] , data[1], data[2]));
 			env->ReleaseFloatArrayElements(*cdata, data, 0);
 		}
 	}
 
 	if(g!=NULL)
 	{
-		g->setVertexArray(_array);
+		g->setVertexArray(array);
 	}
 }
 
@@ -364,7 +364,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetNormal
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
 
 	int array_n = env->GetArrayLength(inputBuffer);
-	osg::Vec3Array* _array = new osg::Vec3Array();
+	osg::Vec3Array* array = new osg::Vec3Array();
 
 	jobject objArray;
 	jsize subarray_n;
@@ -377,14 +377,14 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetNormal
 		if( subarray_n>2 )
 		{
 			data = env->GetFloatArrayElements(*cdata, 0);
-			_array->push_back(osg::Vec3(data[0] , data[1], data[2]));
+			array->push_back(osg::Vec3(data[0] , data[1], data[2]));
 			env->ReleaseFloatArrayElements(*cdata, data, 0);
 		}
 	}
 
 	if(g!=NULL)
 	{
-		g->setNormalArray(_array);
+		g->setNormalArray(array);
 	}
 }
 
@@ -418,7 +418,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorA
 	int array_n = env->GetArrayLength(inputBuffer);
 
 	//LOGI("Colour Array size: %i\n", array_n);
-	osg::Vec4Array* _array = new osg::Vec4Array();
+	osg::Vec4Array* array = new osg::Vec4Array();
 
 	jobject objArray;
 	jsize subarray_n;
@@ -432,14 +432,14 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorA
 		if( subarray_n>3 )
 		{
 			data = env->GetFloatArrayElements(*cdata, 0);
-			_array->push_back(osg::Vec4(data[0], data[1], data[2], data[3]));
+			array->push_back(osg::Vec4(data[0], data[1], data[2], data[3]));
 			env->ReleaseFloatArrayElements(*cdata, data, 0);
 		}
 	}
 
 	if(g!=NULL)
 	{
-		g->setColorArray(_array);
+		g->setColorArray(array);
 	}
 }
 
@@ -471,7 +471,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetTexCoo
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
 
 	int array_n = env->GetArrayLength(inputBuffer);
-	osg::Vec2Array* _array = new osg::Vec2Array();
+	osg::Vec2Array* array = new osg::Vec2Array();
 
 	jobject objArray;
 	jsize subarray_n;
@@ -484,14 +484,14 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetTexCoo
 		if( subarray_n>1 )
 		{
 			data = env->GetFloatArrayElements(*cdata, 0);
-			_array->push_back(osg::Vec2(data[0], data[1]));
+			array->push_back(osg::Vec2(data[0], data[1]));
 			env->ReleaseFloatArrayElements(*cdata, data, 0);
 		}
 	}
 
 	if(g!=NULL)
 	{
-		g->setTexCoordArray((int)tex_unit,_array);
+		g->setTexCoordArray((int)tex_unit,array);
 	}
 }
 
@@ -577,55 +577,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeDispo
 		g->unref();
 }
 
-/*
-JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeCreatePrimitiveSet(JNIEnv *, jclass, jint type, jint mode)
-{
-	osg::PrimitiveSet *g = NULL;
-	switch(type)
-	{
-	case 0:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::PrimitiveType, (int)mode);
-		break;
-	}
-	case 1:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::DrawArraysPrimitiveType, (int)mode);
-		break;
-	}
-	case 2:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::DrawArrayLengthsPrimitiveType, (int)mode);
-		break;
-	}
-	case 3:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::DrawElementsUBytePrimitiveType, (int)mode);
-		break;
-	}
-	case 4:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::DrawElementsUShortPrimitiveType, (int)mode);
-		break;
-	}
-	case 5:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::DrawElementsUIntPrimitiveType, (int)mode);
-		break;
-	}
-	default:
-	{
-		g = new osg::PrimitiveSet(osg::PrimitiveSet::PrimitiveType, (int)mode);
-		break;
-	}
-	}
-
-	if(g!=NULL)
-		g->ref();
-    return reinterpret_cast<jlong>(g);
-}
-*/
-
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeAsPrimitiveSet(JNIEnv *, jclass, jlong cptr)
 {
 	osg::PrimitiveSet *g = reinterpret_cast<osg::PrimitiveSet *>(cptr);
@@ -638,15 +589,12 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeAsPr
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_PrimitiveSetList_nativeDispose(JNIEnv *, jclass, jlong cptr)
 {
 	osg::Geometry::PrimitiveSetList* g = reinterpret_cast<osg::Geometry::PrimitiveSetList*>(cptr);
-	//if(g!=NULL)
-	//	g->unref();
 }
 
 
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_PrimitiveSetList_nativeCreatePrimitiveSetList(JNIEnv* env, jclass)
 {
 	osg::Geometry::PrimitiveSetList* l = new osg::Geometry::PrimitiveSetList();
-	//l->ref();
 	return reinterpret_cast<jlong>(l);
 }
 
@@ -728,13 +676,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Texture_nativeDispose(JN
 	if(t!=NULL)
 		t->unref();
 }
-
-//JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Texture_nativeCreateTexture(JNIEnv*, jclass)
-//{
-//	osg::Texture* t = new osg::Texture();
-//	t->ref();
-//	return reinterpret_cast<jlong>(t);
-//}
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Texture_nativeSetImage(JNIEnv*, jclass, jlong cptr, jint face, jlong image_cptr)
 {
@@ -948,10 +889,8 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Vec3Array_nativePushBack
 {
 	osg::Vec3Array* a = reinterpret_cast<osg::Vec3Array*>(cptr);
 	RefVec3 *v = reinterpret_cast<RefVec3*>(vec_cptr);
-	//osg::Vec3* original = reinterpret_cast<osg::Vec3*>(v->ptr());
 	if(a!=NULL)
 	{
-		//a->push_back(*original);
 		a->push_back(*v);
 	}
 }
@@ -977,13 +916,12 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Vec3Array_nativePopBack
 	osg::Vec3Array* a = reinterpret_cast<osg::Vec3Array*>(cptr);
 	if((a!=NULL) && (a->getNumElements()>0))
 	{
-		//unsigned int pos = a->getNumElements()-1;
 		osg::Vec3 v = a->back();
 		a->pop_back();
 		RefVec3 *refRes = new RefVec3();
 		refRes->set(v.x(), v.y(), v.z());
 		refRes->ref();
-        return reinterpret_cast<jlong>(refRes);
+	        return reinterpret_cast<jlong>(refRes);
 	}
 	return 0l;
 }
@@ -1179,9 +1117,9 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Camera_nativeGetClearCo
     if(g != 0)
     {
         osg::Vec4 v = g->getClearColor();
-		RefVec4 *refRes = new RefVec4();
-		refRes->set(v.x(), v.y(), v.z(), v.a());
-		refRes->ref();
+	RefVec4 *refRes = new RefVec4();
+	refRes->set(v.x(), v.y(), v.z(), v.a());
+	refRes->ref();
         return reinterpret_cast<jlong>(refRes);
     }
     return 0l;
@@ -1189,7 +1127,7 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Camera_nativeGetClearCo
 
 JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Camera_nativeGetViewMatrix(JNIEnv* env, jclass, jlong cptr)
 {
-	osg::Camera *camera = reinterpret_cast<osg::Camera *>(cptr);
+    osg::Camera *camera = reinterpret_cast<osg::Camera *>(cptr);
     if(camera != 0)
     {
         osg::Matrix mat = camera->getViewMatrix();
@@ -2017,15 +1955,11 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Matrix_nativeTranspose(
 	osg::RefMatrixf *result = NULL;
 	if(m!=0)
 	{
-		osg::Matrixf _mat = osg::Matrixf(*m);
-		float* data = (float*)(_mat.ptr());
-		//LOGI("[%f,%f,%f,%f]",data[0],data[1],data[2],data[3]);
-		//LOGI("[%f,%f,%f,%f]",data[4],data[5],data[6],data[7]);
-		//LOGI("[%f,%f,%f,%f]",data[8],data[9],data[10],data[11]);
-		//LOGI("[%f,%f,%f,%f]",data[12],data[13],data[14],data[15]);
-		osg::Matrixf* _t = new osg::Matrixf();
-		_t->set(data[0], data[4], data[8], data[12], data[1], data[5], data[9], data[13], data[2], data[6], data[10], data[14], data[3], data[7], data[11], data[15]);
-		result = new osg::RefMatrixf(*_t);
+		osg::Matrixf mat = osg::Matrixf(*m);
+		float* data = (float*)(mat.ptr());
+		osg::Matrixf* matptr = new osg::Matrixf();
+		matptr->set(data[0], data[4], data[8], data[12], data[1], data[5], data[9], data[13], data[2], data[6], data[10], data[14], data[3], data[7], data[11], data[15]);
+		result = new osg::RefMatrixf(*matptr);
 		result->ref();
 	}
 	return reinterpret_cast<jlong>(result);
@@ -2064,7 +1998,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Matrix_nativeSet(JNIEnv 
     {
         m->set(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22,
                 a23, a30, a31, a32, a33);
-        //osg::notify(osg::NOTICE) << "Matrix:" << *m << std::endl;
     }
 }
 
@@ -2101,11 +2034,11 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Matrix_nativeGetRotatio
 	osg::RefMatrixf *result = NULL;
 	if(m!=0)
 	{
-		osg::Matrixf _mat = osg::Matrixf(*m);
-		float* data = (float*)(_mat.ptr());
-		osg::Matrixf* _t = new osg::Matrixf();
-		_t->set(data[0], data[1], data[2], 0, data[4], data[5], data[6], 0, data[8], data[9], data[10], 0, 0, 0, 0, 1);
-		result = new osg::RefMatrixf(*_t);
+		osg::Matrixf mat = osg::Matrixf(*m);
+		float* data = (float*)(mat.ptr());
+		osg::Matrixf* matptr = new osg::Matrixf();
+		matptr->set(data[0], data[1], data[2], 0, data[4], data[5], data[6], 0, data[8], data[9], data[10], 0, 0, 0, 0, 1);
+		result = new osg::RefMatrixf(*matptr);
 		result->ref();
 	}
 	return reinterpret_cast<jlong>(result);
@@ -2528,7 +2461,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Image_nativeDispose(JNIE
 		im->unref();
 	}
 }
-	
+
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Image_nativeSetImage(JNIEnv *env, jclass, long cptr, 
 			    jint s,jint t,jint r,
 			    jint internalTextureformat,
