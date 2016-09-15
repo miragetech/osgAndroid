@@ -553,12 +553,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Drawable_nativeDispose(J
 		g->unref();
 }
 
-JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Drawable_nativeAsDrawable(JNIEnv *, jclass, jlong cptr)
-{
-	osg::Drawable *g = reinterpret_cast<osg::Drawable *>(cptr);
-	return reinterpret_cast<jlong>(g);
-}
-
 /*
  * osg::PrimitiveSet
  */
@@ -567,12 +561,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeDispo
 	osg::PrimitiveSet *g = reinterpret_cast<osg::PrimitiveSet *>(cptr);
 	if(g!=NULL)
 		g->unref();
-}
-
-JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_PrimitiveSet_nativeAsPrimitiveSet(JNIEnv *, jclass, jlong cptr)
-{
-	osg::PrimitiveSet *g = reinterpret_cast<osg::PrimitiveSet *>(cptr);
-	return reinterpret_cast<jlong>(g);
 }
 
 /*
