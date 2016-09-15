@@ -52,7 +52,6 @@
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
 
-//#include <osgGA/MatrixManipulator>
 #include <osgGA/CameraManipulator>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include <osgGA/GUIEventAdapter>
@@ -191,7 +190,6 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeCreateVi
     viewer->getCamera()->setCullMaskLeft(0x00000001);
     viewer->getCamera()->setCullMaskRight(0x00000002);
     viewer->addEventHandler(new osgViewer::StatsHandler);
-    //viewer->getCamera()->setClearColor(osg::Vec4(0.0,0.0,0.0,0.0));
     // add the state manipulator
     viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
     viewer->ref();
@@ -200,20 +198,20 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeCreateVi
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetViewMatrix(JNIEnv* env, jclass, jlong cptr, jlong matrix_ptr)
 {
-	osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer *>(cptr);
+    osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer *>(cptr);
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(matrix_ptr);
     if(viewer != 0 && m!=0)
     {
-    	osg::Matrixd _mat = osg::Matrixd(*m);
-    	osg::Matrixd _pretransform = osg::Matrixd::scale(1,1,1);
-    	osg::Matrixd _inverse = osg::Matrixd::inverse(_mat);
-    	osg::Matrixd _transformation = _inverse*_pretransform;
+    	osg::Matrixd mat = osg::Matrixd(*m);
+    	osg::Matrixd pretransform = osg::Matrixd::scale(1,1,1);
+    	osg::Matrixd inverse = osg::Matrixd::inverse(mat);
+    	osg::Matrixd transformation = inverse*pretransform;
     	osg::Vec3d eye, center, up;
-    	_transformation.getLookAt(eye, center, up);
+    	transformation.getLookAt(eye, center, up);
 
 
-        osgGA::MultiTouchTrackballManipulator* _view_interaction = reinterpret_cast<osgGA::MultiTouchTrackballManipulator*>(viewer->getCameraManipulator());
-        _view_interaction->setHomePosition(eye,center,up);
+        osgGA::MultiTouchTrackballManipulator* view_interaction = reinterpret_cast<osgGA::MultiTouchTrackballManipulator*>(viewer->getCameraManipulator());
+        view_interaction->setHomePosition(eye,center,up);
         viewer->home();
     }
 }
@@ -226,24 +224,16 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetViewMa
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(matrix_ptr);
     if(viewer != 0 && m!=0)
     {
-    	osg::Matrixd _mat = osg::Matrixd(*m);
+    	osg::Matrixd mat = osg::Matrixd(*m);
     	osg::Vec3d eye, center, up;
     	viewer->getCamera()->getViewMatrixAsLookAt(eye,center,up);
-    	//LOGI("[BEFORE] Eye: (%f,%f,%f) - Center: (%f,%f,%f) - Up: (%f,%f,%f)",eye.x(), eye.y(), eye.z(), center.x(), center.y(), center.z(), up.x(), up.y(), up.z());
 
-    	//double* data = (double*)(_mat.ptr());
-	//LOGI("[%f,%f,%f,%f]",data[0],data[1],data[2],data[3]);
-	//LOGI("[%f,%f,%f,%f]",data[4],data[5],data[6],data[7]);
-	//LOGI("[%f,%f,%f,%f]",data[8],data[9],data[10],data[11]);
-	//LOGI("[%f,%f,%f,%f]",data[12],data[13],data[14],data[15]);
-
-    	viewer->getCamera()->setViewMatrix(_mat);
+    	viewer->getCamera()->setViewMatrix(mat);
     	viewer->getCamera()->getViewMatrixAsLookAt(eye,center,up);
-    	LOGI("Eye: (%f,%f,%f) - Center: (%f,%f,%f) - Up: (%f,%f,%f)",eye.x(), eye.y(), eye.z(), center.x(), center.y(), center.z(), up.x(), up.y(), up.z());
 
-        osgGA::MultiTouchTrackballManipulator* _view_interaction = reinterpret_cast<osgGA::MultiTouchTrackballManipulator*>(viewer->getCameraManipulator());
-        _view_interaction->setDistance(distance);
-        _view_interaction->setHomePosition(eye,center,up);
+        osgGA::MultiTouchTrackballManipulator* view_interaction = reinterpret_cast<osgGA::MultiTouchTrackballManipulator*>(viewer->getCameraManipulator());
+        view_interaction->setDistance(distance);
+        view_interaction->setHomePosition(eye,center,up);
         viewer->home();
     }
 }
@@ -264,7 +254,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_Viewer_nativeSetDefaul
         return;
     viewer->setCameraManipulator(new osgGA::MultiTouchTrackballManipulator());
     viewer->addEventHandler(new osgViewer::StatsHandler);
-    //viewer->getCamera()->setClearColor(osg::Vec4(0.0,0.0,0.0,0.0));
     // add the state manipulator
     viewer->addEventHandler( new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()) );
     viewer->getCamera()->getOrCreateStateSet()->setGlobalDefaults();
@@ -509,22 +498,15 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_viewer_OffScreenViewer_nativ
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_viewer_OffScreenViewer_nativeSetViewMatrix(JNIEnv* env, jclass, jlong cptr, jlong matrix_ptr)
 {
-	osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer *>(cptr);
+    osgViewer::Viewer *viewer = reinterpret_cast<osgViewer::Viewer *>(cptr);
     osg::RefMatrixf *m = reinterpret_cast<osg::RefMatrixf *>(matrix_ptr);
     if(viewer != 0 && m!=0)
     {
     	osg::Matrixd _mat = osg::Matrixd(*m);
 
-    	//double* data = (double*)(_mat.ptr());
-	//LOGI("[%f,%f,%f,%f]",data[0],data[1],data[2],data[3]);
-	//LOGI("[%f,%f,%f,%f]",data[4],data[5],data[6],data[7]);
-	//LOGI("[%f,%f,%f,%f]",data[8],data[9],data[10],data[11]);
-	//LOGI("[%f,%f,%f,%f]",data[12],data[13],data[14],data[15]);
-
     	viewer->getCamera()->setViewMatrix(_mat);
     	osg::Vec3 eye, center, up;
     	viewer->getCamera()->getViewMatrixAsLookAt(eye,center,up);
-    	LOGI("Eye: (%f,%f,%f) - Center: (%f,%f,%f) - Up: (%f,%f,%f)",eye.x(), eye.y(), eye.z(), center.x(), center.y(), center.z(), up.x(), up.y(), up.z());
     }
 }
 
