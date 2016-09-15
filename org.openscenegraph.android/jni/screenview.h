@@ -99,7 +99,7 @@ class WindowCaptureCallback : public osg::Camera::DrawCallback
 
                 getSize(gc, _width, _height);
 
-                std::cout<<"Window size "<<_width<<", "<<_height<<std::endl;
+                osg::notify(osg::NOTICE)<<"Window size "<<_width<<", "<<_height<<std::endl;
 
                 // single buffered image
                 _imageBuffer.push_back(new osg::Image);
@@ -244,8 +244,8 @@ class WindowCaptureCallback : public osg::Camera::DrawCallback
 
         inline virtual void operator() (const osg::Camera& camera) const
         {
-        	//glReadBuffer(_readBuffer);
-        	const osg::GraphicsContext* gc = camera.getGraphicsContext();
+            //glReadBuffer(_readBuffer);
+            const osg::GraphicsContext* gc = camera.getGraphicsContext();
             osg::ref_ptr<ContextData> cd = getContextData(const_cast<osg::GraphicsContext*>(gc));
             cd->read();
         }

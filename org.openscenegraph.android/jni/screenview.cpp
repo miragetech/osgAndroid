@@ -48,8 +48,6 @@ void WindowCaptureCallback::ContextData::updateTimings(osg::Timer_t tick_start,
 
 void WindowCaptureCallback::ContextData::readPixels()
 {
-    // std::cout<<"readPixels("<<_fileName<<" image "<<_currentImageIndex<<" "<<_currentPboIndex<<std::endl;
-
     unsigned int nextImageIndex = (_currentImageIndex+1)%_imageBuffer.size();
     unsigned int nextPboIndex = _pboBuffer.empty() ? 0 : (_currentPboIndex+1)%_pboBuffer.size();
 
@@ -78,26 +76,21 @@ void WindowCaptureCallback::ContextData::readPixels()
     _image_available = true;
     _currentImageToTransfer = reinterpret_cast<osg::Image*>( image->clone ( osg::CopyOp::DEEP_COPY_ALL ) );
 
-    if (!_fileName.empty())
-    {
-        // osgDB::writeImageFile(*image, _fileName);
-    }
-
     _currentImageIndex = nextImageIndex;
     _currentPboIndex = nextPboIndex;
 }
 
 void WindowCaptureCallback::ContextData::singlePBO(osg::GLExtensions* ext)
 {
-    // std::cout<<"singelPBO(  "<<_fileName<<" image "<<_currentImageIndex<<" "<<_currentPboIndex<<std::endl;
-
     unsigned int nextImageIndex = (_currentImageIndex+1)%_imageBuffer.size();
 
     int width=0, height=0;
     getSize(_gc, width, height);
     if (width!=_width || _height!=height)
     {
-        //std::cout<<"   Window resized "<<width<<", "<<height<<std::endl;
+#ifdef DEBUG
+        osg::notify(osg::NOTICE)<<"Window resized "<<width<<", "<<height<<std::endl;
+#endif
         _width = width;
         _height = height;
     }
@@ -161,18 +154,11 @@ void WindowCaptureCallback::ContextData::singlePBO(osg::GLExtensions* ext)
 
     updateTimings(tick_start, tick_afterReadPixels, tick_afterMemCpy, image->getTotalSizeInBytes());
 
-    if (!_fileName.empty())
-    {
-        // osgDB::writeImageFile(*image, _fileName);
-    }
-
-
     _currentImageIndex = nextImageIndex;
 }
 
 void WindowCaptureCallback::ContextData::multiPBO(osg::GLExtensions* ext)
 {
-    // std::cout<<"multiPBO(  "<<_fileName<<" image "<<_currentImageIndex<<" "<<_currentPboIndex<<std::endl;
     unsigned int nextImageIndex = (_currentImageIndex+1)%_imageBuffer.size();
     unsigned int nextPboIndex = (_currentPboIndex+1)%_pboBuffer.size();
 
@@ -262,10 +248,6 @@ void WindowCaptureCallback::ContextData::multiPBO(osg::GLExtensions* ext)
             ext->glUnmapBuffer(GL_PIXEL_PACK_BUFFER_ARB);
         }
 
-        if (!_fileName.empty())
-        {
-            // osgDB::writeImageFile(*image, _fileName);
-        }
     }
 
     ext->glBindBuffer(GL_PIXEL_PACK_BUFFER_ARB, 0);
