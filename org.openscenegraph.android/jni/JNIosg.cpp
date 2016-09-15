@@ -309,9 +309,10 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeCreateGe
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetVertexArray(JNIEnv* env, jclass, jlong cptr, jobjectArray inputBuffer)
 {
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
+	if(g==NULL)
+		return;
 
 	int array_n = env->GetArrayLength(inputBuffer);
-	//printf("Array size: %i\n", array_n);
 	osg::Vec3Array* array = new osg::Vec3Array();
 
 	jobject objArray;
@@ -330,10 +331,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetVertex
 		}
 	}
 
-	if(g!=NULL)
-	{
-		g->setVertexArray(array);
-	}
+	g->setVertexArray(array);
 }
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetVertexArrayNative(JNIEnv* env, jclass, jlong cptr, jlong array_cptr)
@@ -362,6 +360,8 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeGetVerte
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetNormalArray(JNIEnv* env, jclass, jlong cptr, jobjectArray inputBuffer)
 {
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
+	if(g==NULL)
+		return;
 
 	int array_n = env->GetArrayLength(inputBuffer);
 	osg::Vec3Array* array = new osg::Vec3Array();
@@ -382,10 +382,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetNormal
 		}
 	}
 
-	if(g!=NULL)
-	{
-		g->setNormalArray(array);
-	}
+	g->setNormalArray(array);
 }
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetNormalArrayNative(JNIEnv* env, jclass, jlong cptr, jlong array_cptr)
@@ -414,10 +411,11 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeGetNorma
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorArray(JNIEnv* env, jclass, jlong cptr, jobjectArray inputBuffer)
 {
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
+	if(g==NULL)
+		return;
 
 	int array_n = env->GetArrayLength(inputBuffer);
 
-	//LOGI("Colour Array size: %i\n", array_n);
 	osg::Vec4Array* array = new osg::Vec4Array();
 
 	jobject objArray;
@@ -428,7 +426,6 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorA
 		objArray = env->GetObjectArrayElement(inputBuffer,i);
 		jfloatArray* cdata = reinterpret_cast<jfloatArray*>(&objArray);
 		subarray_n = env->GetArrayLength(*cdata);
-		//LOGI("subarray size at %i: %i\n", i, subarray_n);
 		if( subarray_n>3 )
 		{
 			data = env->GetFloatArrayElements(*cdata, 0);
@@ -436,11 +433,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorA
 			env->ReleaseFloatArrayElements(*cdata, data, 0);
 		}
 	}
-
-	if(g!=NULL)
-	{
-		g->setColorArray(array);
-	}
+	g->setColorArray(array);
 }
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetColorArrayNative(JNIEnv* env, jclass, jlong cptr, jlong array_cptr)
@@ -469,6 +462,8 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeGetColor
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetTexCoordArray(JNIEnv* env, jclass, jlong cptr, jobjectArray inputBuffer, jint tex_unit)
 {
 	osg::Geometry *g = reinterpret_cast<osg::Geometry*>(cptr);
+	if(g==NULL)
+		return;
 
 	int array_n = env->GetArrayLength(inputBuffer);
 	osg::Vec2Array* array = new osg::Vec2Array();
@@ -489,10 +484,7 @@ JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetTexCoo
 		}
 	}
 
-	if(g!=NULL)
-	{
-		g->setTexCoordArray((int)tex_unit,array);
-	}
+	g->setTexCoordArray((int)tex_unit,array);
 }
 
 JNIEXPORT void JNICALL Java_org_openscenegraph_osg_core_Geometry_nativeSetTexCoordArrayNative(JNIEnv* env, jclass, jlong cptr, jlong array_cptr, jint tex_unit)
