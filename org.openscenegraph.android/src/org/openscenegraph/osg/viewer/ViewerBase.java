@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -18,31 +19,56 @@
  ---------------------------------------------------------------------------- */
 package org.openscenegraph.osg.viewer;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+import org.openscenegraph.osg.core.Object;
 
-import android.opengl.GLSurfaceView;
+public class ViewerBase extends Object {
 
-public class OSGRenderer implements GLSurfaceView.Renderer {
-	protected ViewerBase _viewer;
-
-	public OSGRenderer(ViewerBase viewer) {
-		_viewer = viewer;
+	private native void nativeSetUpViewerAsEmbedded(long cptr, int x, int y, int width, int height);
+	private native void nativeSetViewport(long cptr, int x, int y, int width, int height);
+	private native void nativeFrame(long cptr);
+	
+	//protected long _cptr;
+	//public long getNativePtr() {
+	//	return _cptr;
+	//}
+	
+	public ViewerBase()
+	{
+		super();
 	}
 	
-	public void onDrawFrame(GL10 gl) {
-		if(_viewer.getNativePtr()!=0)
-			_viewer.frame();
+	public ViewerBase(long cptr)
+	{
+		super(cptr);
+	}
+	
+	/**
+	 * Set The viewport of the scene.
+	 * 
+	 * @param width
+	 *            viewport width.
+	 * @param height
+	 *            viewport height.
+	 */
+	public synchronized void setViewport(int x, int y, int width, int height) {
+		nativeSetViewport(_cptr, x, y, width, height);
+	}
+	
+	/**
+	 * Convenience method for setting up the viewer so it can be used embedded
+	 * in an external managed window.
+	 */
+	public void setUpViewerAsEmbedded(int x, int y, int width, int height) {
+		nativeSetUpViewerAsEmbedded(_cptr, x, y, width, height);
 	}
 
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		if(_viewer.getNativePtr()!=0)
-		{
-			_viewer.setUpViewerAsEmbedded(0, 0, width, height);
-			_viewer.setViewport(0, 0, width, height);
-		}
-	}
-
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	/**
+	 * Execute a frame
+	 * 
+	 */
+	public void frame() {
+		if (_cptr == 0)
+			return;
+		nativeFrame(_cptr);
 	}
 }

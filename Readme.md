@@ -119,4 +119,5 @@ Contributors (use Name Surname - Company):
  + Julio Campos - Mirage Technologies S.L.
  + Jorge Izquierdo - AI2
  + Jordi Torres - AI2
+ + Christian Kehl - Uni Research AS, University of Bergen / Norway
 

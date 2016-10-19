@@ -1,6 +1,7 @@
 /* @License 
  -------------------------------------------------------------------------------
  | osgAndroid - Copyright (C) 2012 Rafael Gait�n, Mirage Technologies S.L.     |
+ | Contribution by Christian Kehl, Uni Research AS CIPR                        |
  |                                                                             |
  | This library is free software; you can redistribute it and/or modify        |
  | it under the terms of the GNU Lesser General Public License as published    |
@@ -16,33 +17,34 @@
  | along with this software; if not, write to the Free Software Foundation,    |
  | Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.               |
  ---------------------------------------------------------------------------- */
-package org.openscenegraph.osg.viewer;
+package org.openscenegraph.osg.core;
 
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
+public class Drawable {
+	private static native void nativeDispose(long cptr);
 
-import android.opengl.GLSurfaceView;
-
-public class OSGRenderer implements GLSurfaceView.Renderer {
-	protected ViewerBase _viewer;
-
-	public OSGRenderer(ViewerBase viewer) {
-		_viewer = viewer;
+	protected long _cptr;
+	
+	public Drawable() {
+		_cptr = 0;
 	}
 	
-	public void onDrawFrame(GL10 gl) {
-		if(_viewer.getNativePtr()!=0)
-			_viewer.frame();
+	public Drawable(long cptr) {
+		_cptr = cptr;	
 	}
 
-	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		if(_viewer.getNativePtr()!=0)
-		{
-			_viewer.setUpViewerAsEmbedded(0, 0, width, height);
-			_viewer.setViewport(0, 0, width, height);
-		}
+	public long getNativePtr() {
+		return _cptr;
 	}
 
-	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+	@Override
+	protected void finalize() throws Throwable {
+		dispose();
+		super.finalize();
+	}
+	
+	public void dispose() {
+		if(_cptr != 0)
+			nativeDispose(_cptr);
+		_cptr = 0;
 	}
 }

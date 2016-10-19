@@ -19,15 +19,38 @@
 package org.openscenegraph.osg.util;
 
 import org.openscenegraph.osg.core.Camera;
+import org.openscenegraph.osg.core.Image;
+import org.openscenegraph.osg.core.Matrix;
+import org.openscenegraph.osg.core.Vec3;
+
+import android.util.Log;
 
 public class GeometryUtils {
 	private static native long nativeCreateScreenQuad(int x, int y, int w, int h, boolean isBackGround);
+	private static native int nativeTextureFromPose(String in_filepath, String out_filepath, long Cg_ptr, long trmat_ptr, long R_ptr, long img_ptr);
+	private static native int nativeTextureFromPoseImgfile(String in_filepath, String out_filepath, long Cg_ptr, long trmat_ptr, long R_ptr, String img_filename);
 	
 	public static Camera createScreenQuad(int x, int y, int w, int h, boolean isBackGround) {
 		long cptr = nativeCreateScreenQuad(x,y,w,h,isBackGround);
 		if(cptr == 0)
 			return null;
 		return new Camera(cptr);
+	}
+
+	public static int TextureFromPose(String in_geometryfile, String out_geometryfile, Vec3 Cg, Matrix trmat, Vec3 RvecCam, Image img)
+	{
+		if(img==null)
+		{
+			Log.e("org.openscenegraph.osg.core.Geometry", "Texture from Pose: image input is null - ABORT.");
+			return 0;
+		}
+		
+		return nativeTextureFromPose(in_geometryfile, out_geometryfile, Cg.getNativePtr(), trmat.getNativePtr(), RvecCam.getNativePtr(), img.getNativePtr());
+	}
+
+	public static int TextureFromPose(String in_geometryfile, String out_geometryfile, Vec3 Cg, Matrix trmat, Vec3 RvecCam, String img_filepath)
+	{
+		return nativeTextureFromPoseImgfile(in_geometryfile, out_geometryfile, Cg.getNativePtr(), trmat.getNativePtr(), RvecCam.getNativePtr(), img_filepath);
 	}
 
 }

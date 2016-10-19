@@ -22,8 +22,10 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
+
 import org.openscenegraph.osg.Native;
 import org.openscenegraph.osg.core.Camera;
+import org.openscenegraph.osg.core.Matrix;
 import org.openscenegraph.osg.core.Node;
 import org.openscenegraph.osg.ga.GUIEventAdapter;
 
@@ -40,18 +42,27 @@ import android.view.View;
 public class Viewer extends GLSurfaceView implements Native,
 		View.OnTouchListener {
 
+	//EGLContext mContext;
+	//EGLSurface
 	private long _cptr;
 	private static String TAG = "org.openscenegraph.osg.viewer.Viewer";
 	private static final boolean DEBUG = false;
 	public long getNativePtr() {
 		return _cptr;
 	}
+	
 
 
 	/**
 	 * @return native pointer to the viewer
 	 */
 	private native long nativeCreateViewer();
+	
+	private native void nativeSetViewMatrix(long cptr, long matrix_ptr);
+
+	private native void nativeSetViewMatrixDistance(long cptr, long matrix_ptr, double distance);
+	
+	private native void nativeSetPerspectiveMatrix(long cptr, int width, int height, float fov);
 
 	private native void nativeDisposeViewer(long cptr);
 
@@ -96,6 +107,7 @@ public class Viewer extends GLSurfaceView implements Native,
 
 	public Viewer(Context context) {
 		super(context);
+		//Log.w(TAG, "Creating Viewer ...");
 		// init(false, 16, 8);
 		/* create the osg viewer */
 		_cptr = nativeCreateViewer();
@@ -109,17 +121,31 @@ public class Viewer extends GLSurfaceView implements Native,
 
 	@Override
 	protected void finalize() throws Throwable {
+		//Log.w(TAG, "Finalizing Viewer ...");
 		dispose();
 		super.finalize();
 	}
 
+	public ViewerBase asViewerBase()
+	{
+		return new ViewerBase(_cptr);
+	}
+	
 	public void dispose() {
-		Log.i(TAG, "Disposing viewer");
+		//Log.w(TAG, "Disposing viewer");
 		if (_cptr != 0)
 			nativeDisposeViewer(_cptr);
 		_cptr = 0;
 	}
 
+	/**
+	 * Convenience method for setting up the perspective with integrated camera
+	 */
+	public void setPerspectiveMatrix(int width, int height, float fovy)
+	{
+		nativeSetPerspectiveMatrix(_cptr, width, height, fovy);
+	}
+	
 	/**
 	 * Convenience method for setting up the viewer so it can be used embedded
 	 * in an external managed window.
@@ -239,7 +265,17 @@ public class Viewer extends GLSurfaceView implements Native,
 	public synchronized void home() {
 		native_home(_cptr);
 	}
+	
+	public synchronized void setViewMatrix(Matrix mat)
+	{
+		nativeSetViewMatrix(_cptr, mat.getNativePtr());
+	}
 
+	public synchronized void setView(Matrix mat, double distance)
+	{
+		nativeSetViewMatrixDistance(_cptr, mat.getNativePtr(),distance);
+	}
+	
 	/**
 	 * Gets the viewer main camera
 	 * 
@@ -306,7 +342,8 @@ public class Viewer extends GLSurfaceView implements Native,
 	}
 
 	public void init(boolean translucent, int depth, int stencil, int glesVersion) {
-		init(translucent, depth, stencil, new OSGRenderer(this), glesVersion);
+		//init(translucent, depth, stencil, new OSGRenderer(this), glesVersion);
+		init(translucent, depth, stencil, new OSGRenderer(asViewerBase()), glesVersion);
 	}
 	
 	public boolean performClick()

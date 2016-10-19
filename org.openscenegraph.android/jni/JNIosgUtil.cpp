@@ -22,14 +22,22 @@
 
 #include "JNIUtils.h"
 #include <stdlib.h>
+#include <sstream>
 
 #include <osg/Camera>
+#include <osg/Node>
 #include <osg/Geode>
 #include <osg/Geometry>
 #include <osg/Matrix>
 #include <osg/Array>
+#include <osg/io_utils>
+#include <osg/PrimitiveSet>
 
 #include <osgViewer/Viewer>
+
+#include <osgUtil/IntersectionVisitor>
+#include <osgUtil/IntersectVisitor>
+#include <osgUtil/LineSegmentIntersector>
 
 #include "GLES2ShaderGenVisitor.h"
 
@@ -37,6 +45,50 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+#include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
+
+USE_OSGPLUGIN(ive)
+USE_OSGPLUGIN(osg2)
+USE_OSGPLUGIN(osg)
+USE_OSGPLUGIN(rgb)
+USE_OSGPLUGIN(bmp)
+USE_OSGPLUGIN(tga)
+USE_OSGPLUGIN(gif)
+USE_OSGPLUGIN(jpeg)
+USE_OSGPLUGIN(OpenFlight)
+
+#ifdef USE_FREETYPE
+    USE_OSGPLUGIN(freetype)
+#endif
+
+USE_DOTOSGWRAPPER_LIBRARY(osg)
+//USE_DOTOSGWRAPPER_LIBRARY(osgAnimation)
+USE_DOTOSGWRAPPER_LIBRARY(osgFX)
+USE_DOTOSGWRAPPER_LIBRARY(osgParticle)
+USE_DOTOSGWRAPPER_LIBRARY(osgShadow)
+USE_DOTOSGWRAPPER_LIBRARY(osgSim)
+USE_DOTOSGWRAPPER_LIBRARY(osgTerrain)
+USE_DOTOSGWRAPPER_LIBRARY(osgText)
+USE_DOTOSGWRAPPER_LIBRARY(osgViewer)
+USE_DOTOSGWRAPPER_LIBRARY(osgVolume)
+USE_DOTOSGWRAPPER_LIBRARY(osgWidget)
+
+USE_SERIALIZER_WRAPPER_LIBRARY(osg)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUtil)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgGA)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgViewer)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgUI)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgAnimation)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgFX)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgManipulator)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgParticle)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgShadow)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgSim)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgTerrain)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgText)
+USE_SERIALIZER_WRAPPER_LIBRARY(osgVolume)
+//USE_SERIALIZER_WRAPPER_LIBRARY(osgPresentation)
 
 extern "C"
 {
@@ -127,5 +179,47 @@ JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_GeometryUtils_nativeCre
 	return reinterpret_cast<jlong>(hud);
 
 }
+
+
+/*
+ * IntersectorGroup
+ */
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeCreateIntersectorGroup(JNIEnv* env, jclass)
+{
+	osgUtil::IntersectorGroup* g = new osgUtil::IntersectorGroup();
+	g->ref();
+	return reinterpret_cast<jlong>(g);
+}
+
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeDispose(JNIEnv* env, jclass, jlong cptr)
+{
+	osgUtil::IntersectorGroup *g = reinterpret_cast<osgUtil::IntersectorGroup *>(cptr);
+    if(g!=0)
+        g->unref();
+}
+
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectorGroup_nativeAddIntersector(JNIEnv* env, jclass, jlong cptr, jfloat x, jfloat y)
+{
+	osgUtil::IntersectorGroup *g = reinterpret_cast<osgUtil::IntersectorGroup *>(cptr);
+	if(g!=0)
+	{
+		g->addIntersector( new osgUtil::LineSegmentIntersector( osgUtil::Intersector::WINDOW, x,y ) );
+	}
+}
+
+/*
+ * IntersectionVisitor
+ */
+JNIEXPORT jlong JNICALL Java_org_openscenegraph_osg_util_IntersectionVisitor_nativeCreateIntersectionVisitor(JNIEnv* env, jclass, jlong base_ptr)
+{
+	osgUtil::IntersectionVisitor* iv;
+	if(base_ptr==0)
+		iv = new osgUtil::IntersectionVisitor();
+	else
+		iv = reinterpret_cast<osgUtil::IntersectionVisitor*>(base_ptr);
+	iv->ref();
+	return reinterpret_cast<jlong>(iv);
+}
+
 
 }

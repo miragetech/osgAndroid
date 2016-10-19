@@ -44,7 +44,8 @@ public class OSGActivity extends Activity {
 			mView = new Viewer(this);
 			mView.init(false, 16, 8, Viewer.GLES1_CONTEXT);
 			File externalStorage = Environment.getExternalStorageDirectory();
-			String path = externalStorage + "/osgAndroid/cessna.osg";
+			//String path = externalStorage + "/models/cow.osg";
+			String path = externalStorage + "/models/cessna.osg";
 
 			mView.setSceneData(/*GLES2ShaderConverter.apply(mView, */ReadFile.readNodeFile(path)/*)*/);
 			//mView.setSceneData(new Group());

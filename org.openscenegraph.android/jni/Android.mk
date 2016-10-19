@@ -1,19 +1,25 @@
 LOCAL_PATH := $(call my-dir)
  
-OSG_SRC_FILES 		:= \
-JNIosgViewer.cpp \
+OSG_SRC_FILES := \
 JNIosg.cpp \
 JNIosgDB.cpp \
 JNIosgUtil.cpp \
 JNIosgGA.cpp \
 JNIUtils.cpp \
+JNIosgViewer.cpp \
 MultiViewNode.cpp \
-GLES2ShaderGenVisitor.cpp
+GLES2ShaderGenVisitor.cpp \
+screenview.cpp
 
 OSG_LDLIBS := \
 -losgdb_osg \
 -losgdb_ive \
 -losgdb_rgb \
+-losgdb_bmp \
+-losgdb_gif \
+-losgdb_jpeg \
+-losgdb_tga \
+-losgdb_obj \
 -losgdb_openflight \
 -losgdb_serializers_osgvolume \
 -losgdb_serializers_osgtext \
@@ -57,14 +63,17 @@ OSG_LDLIBS := \
 -losgAnimation \
 -losgUtil \
 -losg \
--lOpenThreads 
-
+-lOpenThreads \
+-ltiff \
+-ljpeg \
+-lgif \
+-lpng
 
 ### GLES1 build
 include $(CLEAR_VARS)
-OSG_SDK := <path-to-osg-gles1-sdk> #/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles1-sdk
-OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
-OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.8
+OSG_HEAD:=<path-to-osg-gles1-sdk>/$(TARGET_ARCH_ABI)
+OSG_SDK_LIB_PATH:=$(OSG_SDK)/lib
+OSG_SDK_PLUGIN_PATH:=$(OSG_SDK_LIB_PATH)/osgPlugins-3.3.8
 ifneq (,$(wildcard $(OSG_SDK)/include/osg/Config))
 
     APP_MODULES       := jniosg-gles1
@@ -72,8 +81,9 @@ ifneq (,$(wildcard $(OSG_SDK)/include/osg/Config))
     LOCAL_CPPFLAGS    := -DOSG_LIBRARY_STATIC 
     LOCAL_SRC_FILES   := $(OSG_SRC_FILES)
     LOCAL_MODULE      := libjniosg-gles1
-    LOCAL_LDLIBS      := -llog -lGLESv1_CM -ldl 
+    LOCAL_LDLIBS      := -llog -lGLESv1_CM -ldl# -lm
     LOCAL_C_INCLUDES  := $(OSG_SDK)/include
+    LOCAL_CPP_INCLUDES := $(OSG_SDK)/include
     TARGET_LDLIBS     := $(OSG_LDLIBS)
     LOCAL_LDFLAGS := -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
     include $(BUILD_SHARED_LIBRARY)
@@ -83,8 +93,8 @@ endif
 
 ### GLES2 build
 include $(CLEAR_VARS)
-OSG_SDK := <path-to-osg-gles2-sdk> #/Users/rgaitan/Projects/OSG/osg-trunk-android-static-gles2-sdk
-OSG_SDK_LIB_PATH := $(OSG_SDK)/lib
+OSG_SDK := <path-to-osg-gles2-sdk>/$(TARGET_ARCH_ABI)
+OSG_SDK_LIB_PATH:=$(OSG_SDK)/lib
 OSG_SDK_PLUGIN_PATH := $(OSG_SDK_LIB_PATH)/osgPlugins-3.3.8
 ifneq ( ,$(wildcard $(OSG_SDK)/include/osg/Config))
     APP_MODULES       += jniosg-gles2
@@ -92,8 +102,9 @@ ifneq ( ,$(wildcard $(OSG_SDK)/include/osg/Config))
     LOCAL_CPPFLAGS    := -DOSG_LIBRARY_STATIC 
     LOCAL_SRC_FILES   := $(OSG_SRC_FILES)
     LOCAL_MODULE      := libjniosg-gles2
-    LOCAL_LDLIBS      := -llog -lGLESv2 -ldl
+    LOCAL_LDLIBS      := -llog -lGLESv2 -ldl# -lm
     LOCAL_C_INCLUDES  := $(OSG_SDK)/include
+    LOCAL_CPP_INCLUDES := $(OSG_SDK)/include
     TARGET_LDLIBS     := $(OSG_LDLIBS)
     LOCAL_LDFLAGS     := -L$(OSG_SDK_LIB_PATH) -L$(OSG_SDK_PLUGIN_PATH) 
     include $(BUILD_SHARED_LIBRARY)
